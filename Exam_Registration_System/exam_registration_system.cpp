@@ -3,7 +3,7 @@
  * File Name:     exam_registration_system.cpp
  * File Function: 考试报名系统的实现
  * Author:        Jishen Lin (林继申)
- * Update Date:   2023/10/19
+ * Update Date:   2023/10/20
  ****************************************************************/
 
 #include <iostream>
@@ -1047,4 +1047,7 @@ int main()
 {
     /* Exam registration system */
     examRegistrationSystem();
+
+    /* Program ends */
+    return 0;
 }

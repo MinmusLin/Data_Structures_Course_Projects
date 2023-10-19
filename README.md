@@ -12,10 +12,12 @@ Data_Structure_Course_Designs
 
 * Exam_Registration_System 考试报名系统
 
+* Josephus_Problem 约瑟夫生者死者游戏
+
 ## 集成开发环境
 
 * Microsoft Visual Studio
 
 ## 文档更新日期
 
-2023年10月19日
+2023年10月20日
