@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{706dd354-c583-4c16-88da-2992322321a5}</ProjectGuid>
-    <RootNamespace>JosephusProblem</RootNamespace>
+    <ProjectGuid>{a413bb81-0ed2-40aa-89cd-cb0a9c52e016}</ProjectGuid>
+    <RootNamespace>BinarySearchTree</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="josephus_problem.cpp" />
+    <ClCompile Include="binary_search_tree.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
