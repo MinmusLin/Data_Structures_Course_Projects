@@ -134,17 +134,19 @@ MyList<Type>::MyList(MyList<Type>& L)
         exit(MEMORY_ALLOCATION_ERROR);
     }
     last = first;
-    MyLinkNode<Type>* current = L.getHead();
-    while (current != NULL) {
-        MyLinkNode<Type>* newNode = new(std::nothrow) MyLinkNode<Type>(current->data);
-        if (newNode == NULL) {
+    MyLinkNode<Type>* srcptr = L.first->link;
+    MyLinkNode<Type>* dstptr = first;
+    while (srcptr != NULL) {
+        dstptr->link = new(std::nothrow) MyLinkNode<Type>(srcptr->data);
+        if (dstptr->link == NULL) {
             std::cerr << "Error: Memory allocation failed." << std::endl;
             exit(MEMORY_ALLOCATION_ERROR);
         }
-        last->link = newNode;
-        last = newNode;
-        current = current->link;
+        srcptr = srcptr->link;
+        dstptr = dstptr->link;
     }
+    last = dstptr;
+    last->link = NULL;
 }
 
 /*
