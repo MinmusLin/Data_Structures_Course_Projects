@@ -9,6 +9,7 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
+#include <conio.h>
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -18,7 +19,7 @@ template <typename Type>
 struct MyCircLinkNode {
     Type data;
     MyCircLinkNode<Type>* link;
-    MyCircLinkNode(MyCircLinkNode<Type>* ptr = NULL) { link = ptr; }
+    MyCircLinkNode(MyCircLinkNode<Type>* ptr = NULL) { data = 0, link = ptr; }
     MyCircLinkNode(const Type& item, MyCircLinkNode<Type>* ptr = NULL) { data = item; link = ptr; }
 };
 
@@ -99,22 +100,19 @@ MyCircList<Type>::MyCircList(MyCircList<Type>& L)
     }
     first->link = first;
     last = first;
-
-
-
-    MyLinkNode<Type>* current = L.getHead();
-
-
-    while (current != NULL) {
-        MyLinkNode<Type>* newNode = new(std::nothrow) MyLinkNode<Type>(current->data);
-        if (newNode == NULL) {
+    MyCircLinkNode<Type>* srcptr = L.first->link;
+    MyCircLinkNode<Type>* dstptr = first;
+    while (srcptr != NULL) {
+        dstptr->link = new(std::nothrow) MyCircLinkNode<Type>(srcptr->data);
+        if (dstptr->link == NULL) {
             std::cerr << "Error: Memory allocation failed." << std::endl;
             exit(MEMORY_ALLOCATION_ERROR);
         }
-        last->link = newNode;
-        last = newNode;
-        current = current->link;
+        srcptr = srcptr->link;
+        dstptr = dstptr->link;
     }
+    last = dstptr;
+    last->link = first;
 }
 
 /*
@@ -160,7 +158,7 @@ int MyCircList<Type>::getLength(void) const
 {
     int count = 0;
     MyCircLinkNode<Type>* current = first->link;
-    while (current != fisrt) {
+    while (current != first) {
         current = current->link;
         count++;
     }
@@ -228,15 +226,17 @@ MyCircLinkNode<Type>* MyCircList<Type>::locate(int i) const
         return NULL;
     else if (i == 0)
         return first;
-    else {
+    else if (i > 0 && i <= getLength()) {
         MyCircLinkNode<Type>* current = first->link;
         int k = 1;
         while (current != first && k < i) {
             current = current->link;
             k++;
         }
-        return (k <= i ? NULL : current);
+        return current;
     }
+    else
+        return NULL;
 }
 
 /*
@@ -304,6 +304,8 @@ bool MyCircList<Type>::insert(int i, Type& item)
     }
     newNode->link = current->link;
     current->link = newNode;
+    if (current == last)
+        last = newNode;
     return true;
 }
 
@@ -351,9 +353,11 @@ bool MyCircList<Type>::isEmpty(void) const
 template <typename Type>
 void MyCircList<Type>::output(void) const
 {
-    MyLinkNode<Type>* current = first->link;
+    MyCircLinkNode<Type>* current = first->link;
+    std::cout << current->data;
+    current = current->link;
     while (current != first) {
-        std::cout << current->data << std::endl;
+        std::cout << " " << current->data;
         current = current->link;
     }
 }
@@ -374,7 +378,7 @@ MyCircList<Type>& MyCircList<Type>::operator=(MyCircList<Type> L)
     MyCircLinkNode<Type>* currentL = L.first->link;
     MyCircLinkNode<Type>* currentThis = first;
     while (currentL != L.first) {
-        MyCircLinkNode<Type>* newNode = new MyCircLinkNode<Type>(currentL->data);
+        MyCircLinkNode<Type>* newNode = new(std::nothrow) MyCircLinkNode<Type>(currentL->data);
         if (newNode == nullptr) {
             std::cerr << "Error: Memory allocation failed." << std::endl;
             exit(MEMORY_ALLOCATION_ERROR);
@@ -389,6 +393,54 @@ MyCircList<Type>& MyCircList<Type>::operator=(MyCircList<Type> L)
 }
 
 /*
+ * Function Name:    inputInteger
+ * Function:         Input an integer
+ * Input Parameters: int lowerLimit
+ *                   int upperLimit
+ *                   const char* prompt
+ * Return Value:     an integer
+ */
+int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
+{
+    while (true) {
+        std::cout << "请输入" << prompt << "[整数范围: " << lowerLimit << "~" << upperLimit << "]: ";
+        double tempInput;
+        std::cin >> tempInput;
+        if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return static_cast<int>(tempInput);
+        }
+        else {
+            std::cerr << std::endl << ">>> " << prompt << "输入不合法，请重新输入" << prompt << "！" << std::endl << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }
+}
+
+/*
+ * Function Name:    printPrompt
+ * Function:         print information prompt
+ * Input Parameters: void
+ * Return Value:     void
+ */
+void printPrompt(void)
+{
+    /* System entry prompt */
+    std::cout << "+--------------------+" << std::endl;
+    std::cout << "|     约瑟夫游戏     |" << std::endl;
+    std::cout << "|  Josephus Problem  |" << std::endl;
+    std::cout << "+--------------------+" << std::endl;
+
+    /* Problem description */
+    std::cout << std::endl << ">>> 问题描述" << std::endl << std::endl;
+    std::cout << "    N 个人按顺序排成一个环形，依次顺序编号为 1 到 N ，从" << std::endl;
+    std::cout << "第 S 号开始，沿环顺序计数，每数到第 M 个人就将其淘汰，且" << std::endl;
+    std::cout << "从下一个人开始重新计数，重复这个过程，直到剩下 K 个人为止。" << std::endl << std::endl;
+}
+
+/*
  * Function Name:    josephusProblem
  * Function:         Josephus problem
  * Input Parameters: void
@@ -396,7 +448,65 @@ MyCircList<Type>& MyCircList<Type>::operator=(MyCircList<Type> L)
  */
 void josephusProblem(void)
 {
+    /* Input */
+    printPrompt();
+    std::cout << ">>> 请输入总人数、起始位置、间隔人数、剩余人数" << std::endl << std::endl;
+    int N = inputInteger(1, INT_MAX, "总人数 N ");
+    std::cout << std::endl;
+    int S = inputInteger(1, N, "起始位置 S ");
+    std::cout << std::endl;
+    int M = inputInteger(1, INT_MAX, "间隔人数 M ");
+    std::cout << std::endl;
+    int K = inputInteger(0, N - 1, "剩余人数 K ");
 
+    /* Save the order number of each person */
+    int* order = new(std::nothrow) int[N];
+    if (order == NULL) {
+        std::cerr << "Error: Memory allocation failed." << std::endl;
+        exit(MEMORY_ALLOCATION_ERROR);
+    }
+    for (int count = 0; count < N; count++)
+        order[count] = count + 1;
+
+    /* Calculate the number of eliminated people's digits for formatting output */
+    int numDigits = 0, num = N - K;
+    while (num != 0) {
+        num /= 10;
+        numDigits++;
+    }
+
+    /* Initialize a circular linked list */
+    MyCircList<int> circList;
+    for (int count = 0; count < N; count++)
+        circList.insert(count, order[count]);
+
+    /* Perform Josephus problem */
+    int remaining = N, currentPos = S;
+    MyCircLinkNode<int>* currentNode = circList.locate(currentPos);
+    std::cout << std::endl << ">>> 游戏开始" << std::endl << std::endl;
+    while (remaining > K) {
+        for (int count = 1; count < M; count++) {
+            currentNode = currentNode->link;
+            if (currentNode == circList.getHead())
+                currentNode = currentNode->link;
+            currentPos = currentPos % remaining + 1;
+        }
+        currentNode = currentNode->link;
+        if (currentNode == circList.getHead())
+            currentNode = currentNode->link;
+        int eliminated;
+        circList.remove(currentPos, eliminated);
+        std::cout << "第 " << std::setw(numDigits) << N - (--remaining) << " 个淘汰的人的位置: " << eliminated << std::endl;
+    }
+    std::cout << std::endl << ">>> 游戏结束（剩余人数: " << remaining << "）" << std::endl << std::endl;
+    if (remaining != 0) {
+        std::cout << "剩余人的位置为: ";
+        circList.output();
+        std::cout << std::endl << std::endl;
+    }
+
+    /* Free dynamic memory */
+    delete[] order;
 }
 
 /*
@@ -407,7 +517,12 @@ void josephusProblem(void)
 int main()
 {
     /* Josephus problem */
-    //josephusProblem();
+    josephusProblem();
+
+    /* Wait for enter to quit */
+    std::cout << "Press Enter to Quit" << std::endl;
+    while (_getch() != '\r')
+        continue;
 
     /* Program ends */
     return 0;
