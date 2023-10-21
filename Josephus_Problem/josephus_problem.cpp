@@ -326,6 +326,8 @@ bool MyCircList<Type>::remove(int i, Type& item)
     MyCircLinkNode<Type>* del = current->link;
     current->link = del->link;
     item = del->data;
+    if (del == last)
+        last = current;
     delete del;
     return true;
 }
