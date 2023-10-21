@@ -483,25 +483,26 @@ void josephusProblem(void)
         circList.insert(count, order[count]);
 
     /* Perform Josephus problem */
-    int remaining = N, currentPos = S;
+    int remaining = N, currentPos = S, eliminated;
     MyCircLinkNode<int>* currentNode = circList.locate(currentPos);
     std::cout << std::endl << ">>> 游戏开始" << std::endl << std::endl;
     while (remaining > K) {
         for (int count = 1; count < M; count++) {
             currentNode = currentNode->link;
             if (currentNode == circList.getHead())
-                currentNode = currentNode->link;
-            currentPos = currentPos % remaining + 1;
+                count--;
         }
+        currentPos = (currentPos + M - 1) % remaining;
+        if (currentPos == 0)
+            currentPos = remaining;
         currentNode = currentNode->link;
         if (currentNode == circList.getHead())
             currentNode = currentNode->link;
-        int eliminated;
         circList.remove(currentPos, eliminated);
         std::cout << "第 " << std::setw(numDigits) << N - (--remaining) << " 个淘汰的人的位置: " << eliminated << std::endl;
     }
     std::cout << std::endl << ">>> 游戏结束（剩余人数: " << remaining << "）" << std::endl << std::endl;
-    if (remaining != 0) {
+    if (remaining > 0) {
         std::cout << "剩余人的位置为: ";
         circList.output();
         std::cout << std::endl << std::endl;
