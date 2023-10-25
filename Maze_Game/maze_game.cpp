@@ -17,7 +17,6 @@
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
 #define INVALID_INDEX_ERROR -2
-#define INVALID_BRANCH_ERROR -3
 #define MAZE_BLANK 0
 #define MAZE_WALL 1
 #define MAZE_PATH 2
@@ -27,7 +26,9 @@ const int mazeSizeLowerLimit = 7;
 const int mazeSizeUpperLimit = 99;
 const int mazeStartRow = 1;
 const int mazeStartCol = 1;
-const enum Direction { Up, Down, Left, Right };
+
+/* Define Direction */
+enum Direction { Up, Down, Left, Right };
 
 /* Define MyLinkNode structure */
 template <typename Type>
@@ -1068,8 +1069,6 @@ void mazeGame(void)
         maze.BFS();
     else if (optn == 4)
         maze.AStar();
-    else
-        exit(INVALID_BRANCH_ERROR);
     QueryPerformanceCounter(&end);
 
     /* Output the maze path map */
