@@ -5,3 +5,40 @@
  * Author:        Jishen Lin (¡÷ºÃ…Í)
  * Update Date:   2023/10/20
  ****************************************************************/
+
+#include <iostream>
+#include <Windows.h>
+#include <ctime>
+
+/*
+ * Function Name:    main
+ * Function:         Main function
+ * Return Value:     0
+ */
+int main()
+{
+    /* Generate random number seed */
+    srand((unsigned int)(time(0)));
+
+    /* System entry prompt */
+    std::cout << "+------------------------------------+" << std::endl;
+    std::cout << "|            ≈≈–ÚÀ„∑®±»Ωœ            |" << std::endl;
+    std::cout << "|  Comparison of Sorting Algorithms  |" << std::endl;
+    std::cout << "+------------------------------------+" << std::endl;
+    std::cout << "|  [1] √∞≈›≈≈–Ú      Bubble Sort     |" << std::endl;
+    std::cout << "|  [2] —°‘Ò≈≈–Ú      Selection Sort  |" << std::endl;
+    std::cout << "|  [3] ÷±Ω”≤Â»Î≈≈–Ú  Insertion Sort  |" << std::endl;
+    std::cout << "|  [4] ≤º∂˚≈≈–Ú      Bogo Sort       |" << std::endl;
+    std::cout << "|  [5] øÏÀŸ≈≈–Ú      Quick Sort      |" << std::endl;
+    std::cout << "|  [6] ∂—≈≈–Ú        Heap Sort       |" << std::endl;
+    std::cout << "|  [7] πÈ≤¢≈≈–Ú      Merge Sort      |" << std::endl;
+    std::cout << "|  [8] ª˘ ˝≈≈–Ú      Radix Sort      |" << std::endl;
+    std::cout << "|  [0] ÕÀ≥ˆ≥Ã–Ú      Quit Program    |" << std::endl;
+    std::cout << "+------------------------------------+" << std::endl;
+    std::cout << std::endl << ">>> «Î—°‘Ò≤Ÿ◊˜: ";
+
+
+
+
+
+}
