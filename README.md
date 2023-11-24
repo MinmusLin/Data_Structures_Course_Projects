@@ -6,7 +6,10 @@ Data_Structure_Course_Designs
 
 ## 解决方案简介
 
-`Data_Structure_Course_Designs` is a collection of my data structure course designs.
+A collection of my data structure course designs.
+
+> Relevant courses
+> * Data Structure Course Designs (同济大学数据结构课程设计)
 
 ## 解决方案项目组成
 
@@ -36,4 +39,4 @@ Data_Structure_Course_Designs
 
 ## 文档更新日期
 
-2023年11月21日
+2023年11月24日
