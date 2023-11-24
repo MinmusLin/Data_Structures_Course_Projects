@@ -3,7 +3,7 @@
  * File Name:     comparison_of_sorting_algorithms.cpp
  * File Function: ≈≈–ÚÀ„∑®±»Ωœµƒ µœ÷
  * Author:        Jishen Lin (¡÷ºÃ…Í)
- * Update Date:   2023/11/17
+ * Update Date:   2023/11/24
  ****************************************************************/
 
 #include <iostream>
@@ -11,18 +11,31 @@
 #include <ctime>
 #include <limits>
 #include <conio.h>
+#include <iomanip>
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
 
- /*
-  * Function Name:    inputInteger
-  * Function:         Input an integer
-  * Input Parameters: int lowerLimit
-  *                   int upperLimit
-  *                   const char* prompt
-  * Return Value:     an integer
-  */
+/* Define SortFunction type */
+typedef void (*SortFunction)(int*, int);
+
+/* Define SortOption structure */
+struct SortOption {
+    SortFunction func;
+    const char* description;
+};
+
+/* Define static global variable */
+static unsigned int compareCount = 0;
+
+/*
+ * Function Name:    inputInteger
+ * Function:         Input an integer
+ * Input Parameters: int lowerLimit
+ *                   int upperLimit
+ *                   const char* prompt
+ * Return Value:     an integer
+ */
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
@@ -57,7 +70,7 @@ int selectOptn(void)
         if (optn == 0 || optn == -32)
             optn = _getch();
         else if (optn >= '0' && optn <= '8') {
-            std::cout << "[" << optn << "]" << std::endl << std::endl;
+            std::cout << "[" << optn << "]" << std::endl;
             return optn - '0';
         }
     }
@@ -71,10 +84,11 @@ int selectOptn(void)
  * Return Value:     void
  */
 template <typename Type>
-void mySwap(Type& a, Type& b) {
-    Type temp = a;
+void mySwap(Type& a, Type& b)
+{
+    Type tmp = a;
     a = b;
-    b = temp;
+    b = tmp;
 }
 
 /*
@@ -88,9 +102,11 @@ template <typename Type>
 void bubbleSort(Type arr[], int n)
 {
     for (int i = 0; i < n - 1; i++)
-        for (int j = 0; j < n - i - 1; j++)
+        for (int j = 0; j < n - i - 1; j++) {
+            compareCount++;
             if (arr[j] > arr[j + 1])
                 mySwap(arr[j], arr[j + 1]);
+        }
 }
 
 /*
@@ -104,11 +120,13 @@ template <typename Type>
 void selectionSort(Type arr[], int n)
 {
     for (int i = 0; i < n - 1; i++) {
-        int min_idx = i;
-        for (int j = i + 1; j < n; j++)
-            if (arr[j] < arr[min_idx])
-                min_idx = j;
-        mySwap(arr[min_idx], arr[i]);
+        int k = i;
+        for (int j = i + 1; j < n; j++) {
+            compareCount++;
+            if (arr[j] < arr[k])
+                k = j;
+        }
+        mySwap(arr[k], arr[i]);
     }
 }
 
@@ -123,51 +141,36 @@ template <typename Type>
 void insertionSort(Type arr[], int n)
 {
     for (int i = 1; i < n; i++) {
-        int key = arr[i];
-        int j = i - 1;
+        int key = arr[i], j = i - 1;
         while (j >= 0 && arr[j] > key) {
+            compareCount++;
             arr[j + 1] = arr[j];
-            j = j - 1;
+            j--;
         }
         arr[j + 1] = key;
     }
 }
 
 /*
- * Function Name:    booleanSort
- * Function:         Boolean sort
+ * Function Name:    shellSort
+ * Function:         Shell sort
  * Input Parameters: Type arr[]
  *                   int n
  * Return Value:     void
  */
 template <typename Type>
-void booleanSort(Type arr[], int n)
+void shellSort(Type arr[], int n)
 {
-    if (n <= 1)
-        return;
-    Type minVal = arr[0], maxVal = arr[0];
-    for (int i = 1; i < n; i++) {
-        if (arr[i] < minVal)
-            minVal = arr[i];
-        else if (arr[i] > maxVal)
-            maxVal = arr[i];
-    }
-    int index = 0, range = maxVal - minVal + 1;
-    bool* booleanArray = new(std::nothrow) int[range] {false};
-    if (booleanArray == NULL) {
-        std::cerr << "Error: Memory allocation failed." << std::endl;
-        exit(MEMORY_ALLOCATION_ERROR);
-    }
-    for (int i = 0; i < n; i++) {
-        int index = arr[i] - minVal;
-        booleanArray[index] = true;
-    }
-    for (int i = 0; i < range; i++) {
-        while (booleanArray[i]) {
-            arr[index++] = i + minVal;
-            booleanArray[i] = false;
+    int gap, i, j;
+    for (gap = n >> 1; gap > 0; gap >>= 1)
+        for (i = gap; i < n; i++) {
+            Type tmp = arr[i];
+            for (j = i - gap; j >= 0 && arr[j] > tmp; j -= gap) {
+                compareCount++;
+                arr[j + gap] = arr[j];
+            }
+            arr[j + gap] = tmp;
         }
-    }
 }
 
 /*
@@ -184,10 +187,9 @@ int partition(Type arr[], int low, int high)
     Type pivot = arr[high];
     int i = low - 1;
     for (int j = low; j <= high - 1; j++) {
-        if (arr[j] < pivot) {
-            i++;
-            mySwap(arr[i], arr[j]);
-        }
+        compareCount++;
+        if (arr[j] < pivot)
+            mySwap(arr[++i], arr[j]);
     }
     mySwap(arr[i + 1], arr[high]);
     return i + 1;
@@ -225,6 +227,237 @@ void quickSort(Type arr[], int n)
 }
 
 /*
+ * Function Name:    heapify
+ * Function:         Adjust the subtree rooted at index in the array to form a max heap
+ * Input Parameters: Type arr[]
+ *                   int n
+ *                   int i
+ * Return Value:     void
+ */
+template <typename Type>
+void heapify(Type arr[], int n, int i)
+{
+    int largest = i, left = 2 * i + 1, right = 2 * i + 2;
+    compareCount++;
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+    compareCount++;
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+    compareCount++;
+    if (largest != i) {
+        mySwap(arr[i], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+/*
+ * Function Name:    heapSort
+ * Function:         Heap sort
+ * Input Parameters: Type arr[]
+ *                   int n
+ * Return Value:     void
+ */
+template <typename Type>
+void heapSort(Type arr[], int n)
+{
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    for (int i = n - 1; i > 0; i--) {
+        mySwap(arr[0], arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+/*
+ * Function Name:    merge
+ * Function:         Merge function
+ * Input Parameters: Type arr[]
+ *                   int left
+ *                   int mid
+ *                   int right
+ * Return Value:     void
+ */
+template <typename Type>
+void merge(Type arr[], int left, int mid, int right)
+{
+    int n1 = mid - left + 1, n2 = right - mid, i = 0, j = 0, k = left;
+    Type* leftArr = new(std::nothrow) Type[n1];
+    if (leftArr == NULL) {
+        std::cerr << "Error: Memory allocation failed." << std::endl;
+        exit(MEMORY_ALLOCATION_ERROR);
+    }
+    Type* rightArr = new(std::nothrow) Type[n2];
+    if (rightArr == NULL) {
+        std::cerr << "Error: Memory allocation failed." << std::endl;
+        exit(MEMORY_ALLOCATION_ERROR);
+    }
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int i = 0; i < n2; i++)
+        rightArr[i] = arr[mid + 1 + i];
+    while (i < n1 && j < n2) {
+        compareCount++;
+        if (leftArr[i] <= rightArr[j])
+            arr[k++] = leftArr[i++];
+        else
+            arr[k++] = rightArr[j++];
+    }
+    while (i < n1) {
+        compareCount++;
+        arr[k++] = leftArr[i++];
+    }
+    while (j < n2) {
+        compareCount++;
+        arr[k++] = rightArr[j++];
+    }
+    delete[] leftArr;
+    delete[] rightArr;
+}
+
+/*
+ * Function Name:    mergeSort
+ * Function:         Merge sort
+ * Input Parameters: Type arr[]
+ *                   int left
+ *                   int right
+ * Return Value:     void
+ */
+template <typename Type>
+void mergeSort(Type arr[], int left, int right)
+{
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+/*
+ * Function Name:    mergeSort
+ * Function:         Merge sort
+ * Input Parameters: Type arr[]
+ *                   int n
+ * Return Value:     void
+ */
+template <typename Type>
+void mergeSort(Type arr[], int n)
+{
+    mergeSort(arr, 0, n - 1);
+}
+
+/*
+ * Function Name:    getMaxVal
+ * Function:         Get the maximum value
+ * Input Parameters: Type arr[]
+ *                   int n
+ * Return Value:     the maximum value
+ * Notes:            Assume that all elements in the array are positive integers
+ */
+template <typename Type>
+Type getMaxVal(Type arr[], int n)
+{
+    Type maxVal = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > maxVal)
+            maxVal = arr[i];
+    return maxVal;
+}
+
+/*
+ * Function Name:    countSort
+ * Function:         Perform counting sort for each digit
+ * Input Parameters: Type arr[]
+ *                   int n
+ *                   int exp
+ * Return Value:     void
+ * Notes:            Assume that all elements in the array are positive integers
+ */
+template <typename Type>
+void countSort(Type arr[], int n, int exp)
+{
+    Type* output = new(std::nothrow) Type[n];
+    if (output == NULL) {
+        std::cerr << "Error: Memory allocation failed." << std::endl;
+        exit(MEMORY_ALLOCATION_ERROR);
+    }
+    int i, count[10] = { 0 };
+    for (i = 0; i < n; i++)
+        count[(arr[i] / exp) % 10]++;
+    for (i = 1; i < 10; i++)
+        count[i] += count[i - 1];
+    for (i = n - 1; i >= 0; i--) {
+        output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+        count[(arr[i] / exp) % 10]--;
+    }
+    for (i = 0; i < n; i++)
+        arr[i] = output[i];
+    delete[] output;
+}
+
+/*
+ * Function Name:    radixSort
+ * Function:         Radix sort
+ * Input Parameters: Type arr[]
+ *                   int n
+ * Return Value:     void
+ */
+template <typename Type>
+void radixSort(Type arr[], int n)
+{
+    Type maxVal = getMaxVal(arr, n);
+    for (int exp = 1; maxVal / exp > 0; exp *= 10)
+        countSort(arr, n, exp);
+}
+
+/* Define sortOptions array */
+SortOption sortOptions[] = {
+    { bubbleSort, "√∞≈›≈≈–Ú Bubble Sort" },
+    { selectionSort, "—°‘Ò≈≈–Ú Selection Sort" },
+    { insertionSort, "≤Â»Î≈≈–Ú Insertion Sort" },
+    { shellSort, "œ£∂˚≈≈–Ú Shell Sort" },
+    { quickSort, "øÏÀŸ≈≈–Ú Quick Sort" },
+    { heapSort, "∂— ≈≈ –Ú Heap Sort" },
+    { mergeSort, "πÈ≤¢≈≈–Ú Merge Sort" },
+    { radixSort, "ª˘ ˝≈≈–Ú Radix Sort" }
+};
+
+/*
+ * Function Name:    performSort
+ * Function:         Sort function
+ * Input Parameters: SortFunction sortFunc
+ *                   Type arr[]
+ *                   int n
+ *                   const char* prompt
+ * Return Value:     void
+ */
+template <typename Type>
+void performSort(SortFunction sortFunc, Type arr[], int n, const char* prompt)
+{
+    compareCount = 0;
+    std::cout << std::endl << ">>> ≈≈–ÚÀ„∑®: " << prompt << std::endl;
+    int* sortArr = new(std::nothrow) int[n];
+    if (sortArr == NULL) {
+        std::cerr << "Error: Memory allocation failed." << std::endl;
+        exit(MEMORY_ALLOCATION_ERROR);
+    }
+    std::copy(arr, arr + n, sortArr);
+    LARGE_INTEGER tick, begin, end;
+    QueryPerformanceFrequency(&tick);
+    QueryPerformanceCounter(&begin);
+    sortFunc(sortArr, n);
+    QueryPerformanceCounter(&end);
+    std::cout << ">>> ≈≈–Ú ±º‰: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << static_cast<double>(end.QuadPart - begin.QuadPart) / tick.QuadPart << "s" << std::endl;
+    std::cout << ">>> ±»Ωœ¥Œ ˝: " << compareCount << std::endl;
+    //std::cout << ">>> ≈≈–Ú ˝◊È: ";
+    //for (int i = 0; i < n; i++)
+    //    std::cout << sortArr[i] << " ";
+    //std::cout << std::endl;
+    delete[] sortArr;
+}
+
+/*
  * Function Name:    main
  * Function:         Main function
  * Return Value:     0
@@ -240,16 +473,10 @@ int main()
     std::cout << "|  Comparison of Sorting Algorithms  |" << std::endl;
     std::cout << "+------------------------------------+" << std::endl << std::endl;
     std::cout << ">>> ≈≈–ÚÀ„∑®:" << std::endl;
-    std::cout << "    [1] √∞≈›≈≈–Ú Bubble Sort" << std::endl;
-    std::cout << "    [2] —°‘Ò≈≈–Ú Selection Sort" << std::endl;
-    std::cout << "    [3] ≤Â»Î≈≈–Ú Insertion Sort" << std::endl;
-    std::cout << "    [4] ≤º∂˚≈≈–Ú Boolean Sort" << std::endl;
-    std::cout << "    [5] øÏÀŸ≈≈–Ú Quick Sort" << std::endl;
-    std::cout << "    [6] ∂— ≈≈ –Ú Heap Sort" << std::endl;
-    std::cout << "    [7] πÈ≤¢≈≈–Ú Merge Sort" << std::endl;
-    std::cout << "    [8] ª˘ ˝≈≈–Ú Radix Sort" << std::endl;
+    for (int i = 1; i <= 8; i++)
+        std::cout << "    [" << i << "] " << sortOptions[i - 1].description << std::endl;
     std::cout << "    [0] ÕÀ≥ˆ≥Ã–Ú Quit Program" << std::endl << std::endl;
-    
+
     /* Generate random numbers */
     int num = inputInteger(1, INT_MAX, "“™…˙≥…ÀÊª˙ ˝µƒ∏ˆ ˝");
     int* arr = new(std::nothrow) int[num];
@@ -263,40 +490,10 @@ int main()
 
     /* Sorting algorithm */
     while (true) {
-        int* sortArr = new(std::nothrow) int[num];
-        if (sortArr == NULL) {
-            std::cerr << "Error: Memory allocation failed." << std::endl;
-            exit(MEMORY_ALLOCATION_ERROR);
-        }
-        for (int i = 0; i < num; i++)
-            sortArr[i] = arr[i];
-        switch (selectOptn()) {
-            case 1:
-                std::cout << ">>> [1] √∞≈›≈≈–Ú Bubble Sort" << std::endl;
-                break;
-            case 2:
-                std::cout << ">>> [2] —°‘Ò≈≈–Ú Selection Sort" << std::endl;
-                break;
-            case 3:
-                std::cout << ">>> [3] ≤Â»Î≈≈–Ú Insertion Sort" << std::endl;
-                break;
-            case 4:
-                std::cout << ">>> [4] ≤º∂˚≈≈–Ú Boolean Sort" << std::endl;
-                break;
-            case 5:
-                std::cout << ">>> [5] øÏÀŸ≈≈–Ú Quick Sort" << std::endl;
-                break;
-            case 6:
-                std::cout << ">>> [6] ∂—≈≈–Ú Heap Sort" << std::endl;
-                break;
-            case 7:
-                std::cout << ">>> [7] πÈ≤¢≈≈–Ú Merge Sort" << std::endl;
-                break;
-            case 8:
-                std::cout << ">>> [8] ª˘ ˝≈≈–Ú Radix Sort" << std::endl;
-                break;
-            default:
-                return 0;
-        }
+        int optn = selectOptn();
+        if (optn == 0)
+            return 0;
+        else
+            performSort(sortOptions[optn - 1].func, arr, num, sortOptions[optn - 1].description);
     }
 }
