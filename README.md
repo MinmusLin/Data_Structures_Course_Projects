@@ -8,7 +8,7 @@ Data_Structure_Course_Designs
 
 A collection of my data structure course designs.
 
-> Relevant courses
+> Relevant course
 > * Data Structure Course Designs (同济大学数据结构课程设计)
 
 ## 解决方案项目组成
