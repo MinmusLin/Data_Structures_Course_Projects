@@ -13,25 +13,35 @@ A collection of my data structure course designs.
 
 ## 解决方案项目组成
 
-* Binary_Search_Tree 二叉排序树
+* [Binary Search Tree](Binary_Search_Tree/README.docx)
+二叉排序树
 
-* Comparison_of_Sorting_Algorithms 排序算法比较
+* [Comparison of Sorting Algorithms](Comparison_of_Sorting_Algorithms/README.docx)
+排序算法比较
 
-* Exam_Registration_System 考试报名系统
+* [Exam Registration System](Exam_Registration_System/README.docx)
+考试报名系统
 
-* Expression_Calculation 表达式计算
+* [Expression Calculation](Expression_Calculation/README.docx)
+表达式计算
 
-* Genealogy_Management_System 家谱管理系统
+* [Genealogy Management System](Genealogy_Management_System/README.docx)
+家谱管理系统
 
-* Josephus_Problem 约瑟夫游戏
+* [Josephus Problem](Josephus_Problem/README.docx)
+约瑟夫游戏
 
-* Keyword_Search_System 关键词检索系统
+* [Keyword Search System](Keyword_Search_System/README.docx)
+关键词检索系统
 
-* Maze_Game 迷宫游戏
+* [Maze Game](Maze_Game/README.docx)
+迷宫游戏
 
-* N_Queens_Problem N皇后问题
+* [N Queens Problem](N_Queens_Problem/README.docx)
+N皇后问题
 
-* Power_Grid_Construction_Cost_Simulation_System 电网建设造价模拟系统
+* [Power Grid Construction Cost Simulation System](Power_Grid_Construction_Cost_Simulation_System/README.docx)
+电网建设造价模拟系统
 
 ## 集成开发环境
 
@@ -39,4 +49,4 @@ A collection of my data structure course designs.
 
 ## 文档更新日期
 
-2023年11月24日
+2023年11月25日
