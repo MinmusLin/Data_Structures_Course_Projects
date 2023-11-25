@@ -3,7 +3,7 @@
  * File Name:     comparison_of_sorting_algorithms.cpp
  * File Function: 排序算法比较的实现
  * Author:        Jishen Lin (林继申)
- * Update Date:   2023/11/24
+ * Update Date:   2023/11/25
  ****************************************************************/
 
 #include <iostream>
