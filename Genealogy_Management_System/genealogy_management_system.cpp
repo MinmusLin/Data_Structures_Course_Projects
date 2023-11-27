@@ -3,7 +3,7 @@
  * File Name:     genealogy_management_system.cpp
  * File Function: 家谱管理系统的实现
  * Author:        Jishen Lin (林继申)
- * Update Date:   2023/11/26
+ * Update Date:   2023/11/27
  ****************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -525,7 +525,7 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> 菜单: [1]完善家谱 [2]添加家庭成员 [3]解散家庭成员 [4]更改家庭成员姓名 [5]统计家庭成员 [0]退出系统" << std::endl;
+    std::cout << std::endl << ">>> 菜单: [1] [2]添加家庭成员 [3]解散家庭成员 [4]更改家庭成员姓名 [5]统计家庭成员 [0]退出系统" << std::endl;
     std::cout << std::endl << "请选择操作类型: ";
     char optn;
     while (true) {
@@ -721,6 +721,7 @@ int main()
 
     /* Establish a genealogy management system */
     std::cout << ">>> 请建立家谱管理系统" << std::endl;
+    std::cout << std::endl << ">>> [姓名输入要求] 不超过 " << Person::NameMaxLength << " 个英文字符或 " << Person::NameMaxLength / 2 << " 个汉字字符组成的字符串，超出部分将被截断" << std::endl;
     std::cout << std::endl << "请输入祖先姓名: ";
     Person ancestor;
     std::cin >> ancestor;
