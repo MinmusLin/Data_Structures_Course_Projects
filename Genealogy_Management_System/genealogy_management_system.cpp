@@ -525,7 +525,7 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> 菜单: [1] [2]添加家庭成员 [3]解散家庭成员 [4]更改家庭成员姓名 [5]统计家庭成员 [0]退出系统" << std::endl;
+    std::cout << std::endl << ">>> 菜单: [1]完善家谱 [2]添加家庭成员 [3]解散家庭成员 [4]更改家庭成员姓名 [5]统计家庭成员 [0]退出系统" << std::endl;
     std::cout << std::endl << "请选择操作类型: ";
     char optn;
     while (true) {
