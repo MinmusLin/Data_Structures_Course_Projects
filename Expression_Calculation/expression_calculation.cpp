@@ -3,7 +3,7 @@
  * File Name:     expression_calculation.cpp
  * File Function: 表达式计算的实现
  * Author:        Jishen Lin (林继申)
- * Update Date:   2023/11/28
+ * Update Date:   2023/11/29
  ****************************************************************/
 
 #include <iostream>
@@ -11,7 +11,10 @@
 
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
+#define DIVISION_BY_ZERO_ERROR -2
+#define INVALID_OPERATOR_ERROR -3
 #define MAX_LENGTH 256
+#define DEVIATION 1e-6
 
 /* Define MyLinkNode structure */
 template <typename Type>
@@ -563,10 +566,11 @@ class ExpressionTree : public MyBinaryTree<char> {
 private:
     MyStack<char> charStack;
     MyStack<MyBinTreeNode<char>*> treeStack;
-    bool isOperand(char ch) { return ch >= '0' && ch <= '9'; }
     int precedence(char op);
+    double calculateRecursive(MyBinTreeNode<char>* node);
 public:
     void createExpressionTree(const char expression[]);
+    double calculate(void) { return calculateRecursive(this->root); }
 };
 
 /*
@@ -586,6 +590,39 @@ int ExpressionTree::precedence(char op)
 }
 
 /*
+ * Function Name:    calculateRecursive
+ * Function:         Helper function for recursive calculation
+ * Input Parameters: MyBinTreeNode<char>* node
+ * Return Value:     value
+ * Notes:            Class external implementation of member functions
+ */
+double ExpressionTree::calculateRecursive(MyBinTreeNode<char>* node)
+{
+    if (node == NULL)
+        return 0;
+    if (node->leftChild == NULL && node->rightChild == NULL)
+        return node->data - '0';
+    double leftVal = calculateRecursive(node->leftChild), rightVal = calculateRecursive(node->rightChild);
+    switch (node->data) {
+        case '+':
+            return leftVal + rightVal;
+        case '-':
+            return leftVal - rightVal;
+        case '*':
+            return leftVal * rightVal;
+        case '/':
+            if (rightVal >= -DEVIATION && rightVal <= DEVIATION) {
+                std::cerr << "Error: Division by zero." << std::endl;
+                exit(DIVISION_BY_ZERO_ERROR);
+            }
+            return leftVal / rightVal;
+        default:
+            std::cerr << "Error: Invalid operator." << std::endl;
+            exit(INVALID_OPERATOR_ERROR);
+    }
+}
+
+/*
  * Function Name:    createExpressionTree
  * Function:         Create expression tree
  * Input Parameters: const char expression[]
@@ -594,11 +631,11 @@ int ExpressionTree::precedence(char op)
  */
 void ExpressionTree::createExpressionTree(const char expression[])
 {
-    char postfix[MAX_LENGTH + 1]; // Array to store postfix expression
+    char postfix[MAX_LENGTH + 1] = { 0 }; // Array to store postfix expression
     int postfixIndex = 0; // Index for the postfix array
     for (int i = 0; expression[i] != '\0'; i++) {
         char token = expression[i];
-        if (isOperand(token))
+        if (token >= '0' && token <= '9')
             postfix[postfixIndex++] = token; // Directly add operand to postfix
         else if (token == '(')
             charStack.push(token); // Push '(' onto stack
@@ -622,11 +659,10 @@ void ExpressionTree::createExpressionTree(const char expression[])
     }
     while (!charStack.isEmpty())
         charStack.pop(postfix[postfixIndex++]); // Pop remaining operators from the stack
-    postfix[postfixIndex] = '\0';
     for (int i = 0; postfix[i] != '\0'; i++) {
         char token = postfix[i];
         MyBinTreeNode<char>* node;
-        if (isOperand(token)) {
+        if (token >= '0' && token <= '9') {
             node = new(std::nothrow) MyBinTreeNode<char>(token);
             if (node == NULL) {
                 std::cerr << "Error: Memory allocation failed." << std::endl;
@@ -650,36 +686,127 @@ void ExpressionTree::createExpressionTree(const char expression[])
 }
 
 /*
+ * Function Name:    isValidExpression
+ * Function:         Check if a expression is valid
+ * Input Parameters: const char expression[]
+ * Return Value:     true / false
+ */
+bool isValidExpression(const char expression[])
+{
+    if (expression[0] == '\0') {
+        std::cout << ">>> 表达式为空，请重新输入！" << std::endl;
+        return false;
+    }
+    MyStack<char> parenthesesStack;
+    bool lastWasOperator = false, lastWasOperand = false;
+    for (int i = 0; expression[i] != '\0'; i++) {
+        char ch = expression[i];
+        if (!((ch >= '0' && ch <= '9') || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '(' || ch == ')')) {
+            std::cout << ">>> 表达式存在非法字符输入，请重新输入！" << std::endl;
+            return false;
+        }
+        if (i == 0 && (ch == '+' || ch == '-' || ch == '*' || ch == '/')) {
+            std::cout << ">>> 表达式不能以运算符开始，请重新输入！" << std::endl;
+            return false;
+        }
+        if (ch == '(') {
+            if (expression[i + 1] == ')') {
+                std::cout << ">>> 表达式存在空括号，请重新输入！" << std::endl;
+                return false;
+            }
+            parenthesesStack.push(ch);
+            lastWasOperator = false;
+            lastWasOperand = false;
+        }
+        else if (ch == ')') {
+            char tmp;
+            parenthesesStack.getTop(tmp);
+            if (parenthesesStack.isEmpty() || tmp != '(') {
+                std::cout << ">>> 表达式括号不匹配，请重新输入！" << std::endl;
+                return false;
+            }
+            parenthesesStack.pop(tmp);
+        }
+        if (ch >= '0' && ch <= '9') {
+            if (lastWasOperand) {
+                std::cout << ">>> 表达式仅适用于单位数运算，不适用于多位数运算，请重新输入！" << std::endl;
+                return false;
+            }
+            lastWasOperand = true;
+            lastWasOperator = false;
+        }
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+            if (!lastWasOperand) {
+                std::cout << ">>> 表达式中每个运算符前后必须连接数字，请重新输入！" << std::endl;
+                return false;
+            }
+            lastWasOperand = false;
+            lastWasOperator = true;
+        }
+    }
+    if (!parenthesesStack.isEmpty()) {
+        std::cout << ">>> 表达式括号不匹配，请重新输入！" << std::endl;
+        return false;
+    }
+    if (lastWasOperator) {
+        std::cout << ">>> 表达式不能以运算符结尾，请重新输入！" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+/*
+ * Function Name:    printPrompt
+ * Function:         Print prompt
+ * Input Parameters: void
+ * Return Value:     void
+ */
+void printPrompt(void)
+{
+    std::cout << "+--------------------------+" << std::endl;
+    std::cout << "|        表达式计算        |" << std::endl;
+    std::cout << "|  Expression Calculation  |" << std::endl;
+    std::cout << "+--------------------------+" << std::endl << std::endl;
+    std::cout << ">>> 表达式输入要求" << std::endl;
+    std::cout << "    [1] 表达式为不超过 " << MAX_LENGTH << " 个字符组成的字符串，超出部分将被截断" << std::endl;
+    std::cout << "    [2] 表达式中只存在以下 16 种字符: 0 1 2 3 4 5 6 7 8 9 + - * / ( )" << std::endl;
+    std::cout << "    [3] 表达式中的括号嵌套匹配" << std::endl;
+    std::cout << "    [4] 表达式仅适用于单位数运算，不适用于多位数运算" << std::endl;
+    std::cout << "    [5] 表达式中每个运算符前后必须连接数字（\"-n\"请输入为\"0-n\"）" << std::endl;
+}
+
+/*
  * Function Name:    main
  * Function:         Main function
  * Return Value:     0
  */
 int main()
 {
-    /* System entry prompt */
-    std::cout << "+--------------------------+" << std::endl;
-    std::cout << "|        表达式计算        |" << std::endl;
-    std::cout << "|  Expression Calculation  |" << std::endl;
-    std::cout << "+--------------------------+" << std::endl << std::endl;
-
     /* Enter the expression */
+    printPrompt();
     char expression[MAX_LENGTH + 1] = { 0 };
-    std::cout << "请输入表达式: ";
-    std::cin >> expression;
-
-    // TODO: Invalid input
+    while (true) {
+        std::cout << std::endl << "请输入表达式: ";
+        std::cin.getline(expression, MAX_LENGTH + 1);
+        std::cout << std::endl;
+        if (isValidExpression(expression))
+            break;
+    }
 
     /* Build the expression tree */
     ExpressionTree expressionTree;
     expressionTree.createExpressionTree(expression);
 
     /* Output three types of the expression */
-    std::cout << std::endl << ">>> 前缀表达式（波兰表达式）  : ";
+    std::cout << ">>> 前缀表达式（波兰表达式）  : ";
     expressionTree.preOrderOutput(expressionTree.getRoot());
     std::cout << std::endl << std::endl << ">>> 中缀表达式                : " << expression << std::endl;
     std::cout << std::endl << ">>> 后缀表达式（逆波兰表达式）: ";
     expressionTree.postOrderOutput(expressionTree.getRoot());
     std::cout << std::endl << std::endl;
+
+    /* Calculate the expression */
+    std::cout << ">>> 表达式的值: " << expressionTree.calculate() << std::endl << std::endl;
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
