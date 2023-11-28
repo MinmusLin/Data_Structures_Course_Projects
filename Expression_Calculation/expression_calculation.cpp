@@ -785,13 +785,11 @@ int main()
     /* Enter the expression */
     printPrompt();
     char expression[MAX_LENGTH + 1] = { 0 };
-    while (true) {
+    do {
         std::cout << std::endl << "请输入表达式: ";
         std::cin.getline(expression, MAX_LENGTH + 1);
         std::cout << std::endl;
-        if (isValidExpression(expression))
-            break;
-    }
+    } while (!isValidExpression(expression));
 
     /* Build the expression tree */
     ExpressionTree expressionTree;
