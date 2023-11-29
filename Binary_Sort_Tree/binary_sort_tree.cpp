@@ -3,7 +3,7 @@
  * File Name:     binary_sort_tree.cpp
  * File Function: 二叉排序树的实现
  * Author:        Jishen Lin (林继申)
- * Update Date:   2023/11/29
+ * Update Date:   2023/11/30
  ****************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -458,6 +458,7 @@ private:
     void insertPrivate(const Type& item, MyBinTreeNode<Type>*& subTree);
 public:
     void insert(const Type& item) { insertPrivate(item, this->root); }
+    bool search(const Type& item);
     void outputBST(void);
 };
 
@@ -485,6 +486,28 @@ void BinarySortTree<Type>::insertPrivate(const Type& item, MyBinTreeNode<Type>*&
         insertPrivate(item, subTree->rightChild);
     // If item is equal to subTree->data, then it is not inserted,
     // because binary sort tree (BST) does not allow duplicate values.
+}
+
+/*
+ * Function Name:    search
+ * Function:         Search a node in binary sort tree
+ * Input Parameters: const Type& item
+ * Return Value:     true / false
+ * Notes:            Class external implementation of member functions
+ */
+template <typename Type>
+bool BinarySortTree<Type>::search(const Type& item)
+{
+    MyBinTreeNode<Type>* current = this->root;
+    while (current != NULL) {
+        if (item == current->data)
+            return true;
+        else if (item < current->data)
+            current = current->leftChild;
+        else
+            current = current->rightChild;
+    }
+    return false;
 }
 
 /*
@@ -537,7 +560,7 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> 菜单: [1]插入元素 [2]查询元素 [0]退出系统" << std::endl;
+    std::cout << std::endl << ">>> 菜单: [1]插入元素 [2]查询元素 [0]退出程序" << std::endl;
     std::cout << std::endl << "请选择操作类型: ";
     char optn;
     while (true) {
@@ -549,6 +572,37 @@ int selectOptn(void)
             return optn - '0';
         }
     }
+}
+
+/*
+ * Function Name:    insertElement
+ * Function:         Insert element function
+ * Input Parameters: BinarySortTree<int>& binarySortTree
+ * Return Value:     void
+ */
+void insertElement(BinarySortTree<int>& binarySortTree)
+{
+    std::cout << std::endl;
+    int val = inputInteger(SHRT_MIN, SHRT_MAX, "插入元素的值");
+    if (binarySortTree.search(val))
+        std::cout << std::endl << ">>> 输入元素的值 " << val << " 在二叉排序树中已存在！" << std::endl;
+    else {
+        binarySortTree.insert(val);
+        binarySortTree.outputBST();
+    }
+}
+
+/*
+ * Function Name:    searchElement
+ * Function:         Search element function
+ * Input Parameters: BinarySortTree<int>& binarySortTree
+ * Return Value:     void
+ */
+void searchElement(BinarySortTree<int>& binarySortTree)
+{
+    std::cout << std::endl;
+    int val = inputInteger(SHRT_MIN, SHRT_MAX, "查询元素的值");
+    std::cout << std::endl << ">>> 查询元素的值 " << val << " 在二叉排序树中" << (binarySortTree.search(val) ? "" : "不") << "存在！" << std::endl;
 }
 
 /*
@@ -573,7 +627,7 @@ int main()
         char tmp[64] = { 0 };
         sprintf(tmp, "第 %d 个元素的值", i + 1);
         int val = inputInteger(SHRT_MIN, SHRT_MAX, tmp);
-        if (binarySortTree.findNode(val, binarySortTree.getRoot())) {
+        if (binarySortTree.search(val)) {
             std::cout << std::endl << ">>> 输入元素的值 " << val << " 在二叉排序树中已存在，请重新输入！" << std::endl << std::endl;
             i--;
         }
@@ -585,26 +639,12 @@ int main()
 
     /* Perform operations */
     while (true) {
-        switch (selectOptn()) {
-            case 1: {
-                std::cout << std::endl;
-                int val = inputInteger(SHRT_MIN, SHRT_MAX, "插入元素的值");
-                if (binarySortTree.findNode(val, binarySortTree.getRoot()))
-                    std::cout << std::endl << ">>> 输入元素的值 " << val << " 在二叉排序树中已存在！" << std::endl;
-                else {
-                    binarySortTree.insert(val);
-                    binarySortTree.outputBST();
-                }
-                break;
-            }
-            case 2: {
-                std::cout << std::endl;
-                int val = inputInteger(SHRT_MIN, SHRT_MAX, "查询元素的值");
-                std::cout << std::endl << ">>> 查询元素的值 " << val << " 在二叉排序树中" << (binarySortTree.findNode(val, binarySortTree.getRoot()) ? "" : "不") << "存在！" << std::endl;
-                break;
-            }
-            default:
-                return 0;
-        }
+        int optn = selectOptn();
+        if (optn == 1)
+            insertElement(binarySortTree);
+        else if (optn == 2)
+            searchElement(binarySortTree);
+        else
+            return 0;
     }
 }
