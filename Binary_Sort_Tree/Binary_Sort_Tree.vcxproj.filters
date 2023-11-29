@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="binary_search_tree.cpp">
+    <ClCompile Include="binary_sort_tree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

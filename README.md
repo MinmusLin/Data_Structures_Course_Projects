@@ -13,7 +13,7 @@ A collection of my data structure course designs.
 
 ## 解决方案项目组成
 
-* [Binary Search Tree](Binary_Search_Tree)
+* [Binary Sort Tree](Binary_Sort_Tree)
 二叉排序树
 
 * [Comparison of Sorting Algorithms](Comparison_of_Sorting_Algorithms)
