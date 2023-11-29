@@ -616,7 +616,7 @@ double ExpressionTree::calculateRecursive(MyBinTreeNode<char>* node)
             }
             return leftVal / rightVal;
         default:
-            break;
+            return 0;
     }
 }
 
