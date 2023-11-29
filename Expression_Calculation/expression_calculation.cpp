@@ -12,7 +12,6 @@
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
 #define DIVISION_BY_ZERO_ERROR -2
-#define INVALID_OPERATOR_ERROR -3
 #define MAX_LENGTH 256
 #define DEVIATION 1e-6
 
@@ -617,8 +616,7 @@ double ExpressionTree::calculateRecursive(MyBinTreeNode<char>* node)
             }
             return leftVal / rightVal;
         default:
-            std::cerr << "Error: Invalid operator." << std::endl;
-            exit(INVALID_OPERATOR_ERROR);
+            break;
     }
 }
 
