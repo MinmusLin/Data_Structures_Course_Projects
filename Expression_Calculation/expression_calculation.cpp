@@ -1,13 +1,18 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Expression_Calculation
  * File Name:     expression_calculation.cpp
- * File Function: ±í´ïÊ½¼ÆËãµÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/11/29
+ * File Function: è¡¨è¾¾å¼è®¡ç®—çš„å®žçŽ°
+ * Author:        Jishen Lin (æž—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
+#ifdef _WIN32
 #include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -692,7 +697,7 @@ void ExpressionTree::createExpressionTree(const char expression[])
 bool isValidExpression(const char expression[])
 {
     if (expression[0] == '\0') {
-        std::cout << ">>> ±í´ïÊ½Îª¿Õ£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+        std::cout << ">>> è¡¨è¾¾å¼ä¸ºç©ºï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
         return false;
     }
     MyStack<char> parenthesesStack;
@@ -700,16 +705,16 @@ bool isValidExpression(const char expression[])
     for (int i = 0; expression[i] != '\0'; i++) {
         char ch = expression[i];
         if (!((ch >= '0' && ch <= '9') || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '(' || ch == ')')) {
-            std::cout << ">>> ±í´ïÊ½´æÔÚ·Ç·¨×Ö·ûÊäÈë£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+            std::cout << ">>> è¡¨è¾¾å¼å­˜åœ¨éžæ³•å­—ç¬¦è¾“å…¥ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
             return false;
         }
         if (i == 0 && (ch == '+' || ch == '-' || ch == '*' || ch == '/')) {
-            std::cout << ">>> ±í´ïÊ½²»ÄÜÒÔÔËËã·û¿ªÊ¼£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+            std::cout << ">>> è¡¨è¾¾å¼ä¸èƒ½ä»¥è¿ç®—ç¬¦å¼€å§‹ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
             return false;
         }
         if (ch == '(') {
             if (expression[i + 1] == ')') {
-                std::cout << ">>> ±í´ïÊ½´æÔÚ¿ÕÀ¨ºÅ£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+                std::cout << ">>> è¡¨è¾¾å¼å­˜åœ¨ç©ºæ‹¬å·ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
                 return false;
             }
             parenthesesStack.push(ch);
@@ -720,14 +725,14 @@ bool isValidExpression(const char expression[])
             char tmp;
             parenthesesStack.getTop(tmp);
             if (parenthesesStack.isEmpty() || tmp != '(') {
-                std::cout << ">>> ±í´ïÊ½À¨ºÅ²»Æ¥Åä£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+                std::cout << ">>> è¡¨è¾¾å¼æ‹¬å·ä¸åŒ¹é…ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
                 return false;
             }
             parenthesesStack.pop(tmp);
         }
         if (ch >= '0' && ch <= '9') {
             if (lastWasOperand) {
-                std::cout << ">>> ±í´ïÊ½½öÊÊÓÃÓÚµ¥Î»ÊýÔËËã£¬²»ÊÊÓÃÓÚ¶àÎ»ÊýÔËËã£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+                std::cout << ">>> è¡¨è¾¾å¼ä»…é€‚ç”¨äºŽå•ä½æ•°è¿ç®—ï¼Œä¸é€‚ç”¨äºŽå¤šä½æ•°è¿ç®—ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
                 return false;
             }
             lastWasOperand = true;
@@ -735,7 +740,7 @@ bool isValidExpression(const char expression[])
         }
         else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             if (!lastWasOperand) {
-                std::cout << ">>> ±í´ïÊ½ÖÐÃ¿¸öÔËËã·ûÇ°ºó±ØÐëÁ¬½ÓÊý×Ö£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+                std::cout << ">>> è¡¨è¾¾å¼ä¸­æ¯ä¸ªè¿ç®—ç¬¦å‰åŽå¿…é¡»è¿žæŽ¥æ•°å­—ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
                 return false;
             }
             lastWasOperand = false;
@@ -743,11 +748,11 @@ bool isValidExpression(const char expression[])
         }
     }
     if (!parenthesesStack.isEmpty()) {
-        std::cout << ">>> ±í´ïÊ½À¨ºÅ²»Æ¥Åä£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+        std::cout << ">>> è¡¨è¾¾å¼æ‹¬å·ä¸åŒ¹é…ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
         return false;
     }
     if (lastWasOperator) {
-        std::cout << ">>> ±í´ïÊ½²»ÄÜÒÔÔËËã·û½áÎ²£¬ÇëÖØÐÂÊäÈë£¡" << std::endl;
+        std::cout << ">>> è¡¨è¾¾å¼ä¸èƒ½ä»¥è¿ç®—ç¬¦ç»“å°¾ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
         return false;
     }
     return true;
@@ -762,15 +767,15 @@ bool isValidExpression(const char expression[])
 void printPrompt(void)
 {
     std::cout << "+--------------------------+" << std::endl;
-    std::cout << "|        ±í´ïÊ½¼ÆËã        |" << std::endl;
+    std::cout << "|        è¡¨è¾¾å¼è®¡ç®—        |" << std::endl;
     std::cout << "|  Expression Calculation  |" << std::endl;
     std::cout << "+--------------------------+" << std::endl << std::endl;
-    std::cout << ">>> ±í´ïÊ½ÊäÈëÒªÇó" << std::endl;
-    std::cout << "    [1] ±í´ïÊ½Îª²»³¬¹ý " << MAX_LENGTH << " ¸ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï" << std::endl;
-    std::cout << "    [2] ±í´ïÊ½ÖÐÖ»´æÔÚÒÔÏÂ 16 ÖÖ×Ö·û: 0 1 2 3 4 5 6 7 8 9 + - * / ( )" << std::endl;
-    std::cout << "    [3] ±í´ïÊ½ÖÐµÄÀ¨ºÅÇ¶Ì×Æ¥Åä" << std::endl;
-    std::cout << "    [4] ±í´ïÊ½½öÊÊÓÃÓÚµ¥Î»ÊýÔËËã£¬²»ÊÊÓÃÓÚ¶àÎ»ÊýÔËËã" << std::endl;
-    std::cout << "    [5] ±í´ïÊ½ÖÐÃ¿¸öÔËËã·ûÇ°ºó±ØÐëÁ¬½ÓÊý×Ö£¨\"-n\"ÇëÊäÈëÎª\"0-n\"£©" << std::endl;
+    std::cout << ">>> è¡¨è¾¾å¼è¾“å…¥è¦æ±‚" << std::endl;
+    std::cout << "    [1] è¡¨è¾¾å¼ä¸ºä¸è¶…è¿‡ " << MAX_LENGTH << " ä¸ªå­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­" << std::endl;
+    std::cout << "    [2] è¡¨è¾¾å¼ä¸­åªå­˜åœ¨ä»¥ä¸‹ 16 ç§å­—ç¬¦: 0 1 2 3 4 5 6 7 8 9 + - * / ( )" << std::endl;
+    std::cout << "    [3] è¡¨è¾¾å¼ä¸­çš„æ‹¬å·åµŒå¥—åŒ¹é…" << std::endl;
+    std::cout << "    [4] è¡¨è¾¾å¼ä»…é€‚ç”¨äºŽå•ä½æ•°è¿ç®—ï¼Œä¸é€‚ç”¨äºŽå¤šä½æ•°è¿ç®—" << std::endl;
+    std::cout << "    [5] è¡¨è¾¾å¼ä¸­æ¯ä¸ªè¿ç®—ç¬¦å‰åŽå¿…é¡»è¿žæŽ¥æ•°å­—ï¼ˆ\"-n\"è¯·è¾“å…¥ä¸º\"0-n\"ï¼‰" << std::endl;
 }
 
 /*
@@ -784,7 +789,7 @@ int main()
     printPrompt();
     char expression[MAX_LENGTH + 1] = { 0 };
     do {
-        std::cout << std::endl << "ÇëÊäÈë±í´ïÊ½: ";
+        std::cout << std::endl << "è¯·è¾“å…¥è¡¨è¾¾å¼: ";
         std::cin.getline(expression, MAX_LENGTH + 1);
         std::cout << std::endl;
     } while (!isValidExpression(expression));
@@ -794,20 +799,31 @@ int main()
     expressionTree.createExpressionTree(expression);
 
     /* Output three types of the expression */
-    std::cout << ">>> Ç°×º±í´ïÊ½£¨²¨À¼±í´ïÊ½£©  : ";
+    std::cout << ">>> å‰ç¼€è¡¨è¾¾å¼ï¼ˆæ³¢å…°è¡¨è¾¾å¼ï¼‰  : ";
     expressionTree.preOrderOutput(expressionTree.getRoot());
-    std::cout << std::endl << std::endl << ">>> ÖÐ×º±í´ïÊ½                : " << expression << std::endl;
-    std::cout << std::endl << ">>> ºó×º±í´ïÊ½£¨Äæ²¨À¼±í´ïÊ½£©: ";
+    std::cout << std::endl << std::endl << ">>> ä¸­ç¼€è¡¨è¾¾å¼                : " << expression << std::endl;
+    std::cout << std::endl << ">>> åŽç¼€è¡¨è¾¾å¼ï¼ˆé€†æ³¢å…°è¡¨è¾¾å¼ï¼‰: ";
     expressionTree.postOrderOutput(expressionTree.getRoot());
     std::cout << std::endl << std::endl;
 
     /* Calculate the expression */
-    std::cout << ">>> ±í´ïÊ½µÄÖµ: " << expressionTree.calculate() << std::endl << std::endl;
+    std::cout << ">>> è¡¨è¾¾å¼çš„å€¼: " << expressionTree.calculate() << std::endl << std::endl;
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;

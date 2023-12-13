@@ -1,16 +1,21 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Binary_Sort_Tree
  * File Name:     binary_sort_tree.cpp
- * File Function: ¶ş²æÅÅĞòÊ÷µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/11/30
+ * File Function: äºŒå‰æ’åºæ ‘çš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <stdlib.h>
 #include <iostream>
-#include <limits>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -520,7 +525,7 @@ bool BinarySortTree<Type>::search(const Type& item)
 template <typename Type>
 void BinarySortTree<Type>::outputBST(void)
 {
-    std::cout << std::endl << ">>> ¶ş²æÅÅĞòÊ÷£¨ÔªËØ¸öÊı: " << this->getSize(this->root) << "£©: ";
+    std::cout << std::endl << ">>> äºŒå‰æ’åºæ ‘ï¼ˆå…ƒç´ ä¸ªæ•°: " << this->getSize(this->root) << "ï¼‰: ";
     this->inOrderOutput(this->root);
     std::cout << "[END]" << std::endl;
 }
@@ -536,18 +541,18 @@ void BinarySortTree<Type>::outputBST(void)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
         }
     }
 }
@@ -560,13 +565,30 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> ²Ëµ¥: [1]²åÈëÔªËØ [2]²éÑ¯ÔªËØ [0]ÍË³ö³ÌĞò" << std::endl;
-    std::cout << std::endl << "ÇëÑ¡Ôñ²Ù×÷ÀàĞÍ: ";
+    std::cout << std::endl << ">>> èœå•: [1]æ’å…¥å…ƒç´  [2]æŸ¥è¯¢å…ƒç´  [0]é€€å‡ºç¨‹åº" << std::endl;
+    std::cout << std::endl << "è¯·é€‰æ‹©æ“ä½œç±»å‹: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '0' && optn <= '2') {
             std::cout << "[" << optn << "]" << std::endl;
             return optn - '0';
@@ -583,9 +605,9 @@ int selectOptn(void)
 void insertElement(BinarySortTree<int>& binarySortTree)
 {
     std::cout << std::endl;
-    int val = inputInteger(SHRT_MIN, SHRT_MAX, "²åÈëÔªËØµÄÖµ");
+    int val = inputInteger(SHRT_MIN, SHRT_MAX, "æ’å…¥å…ƒç´ çš„å€¼");
     if (binarySortTree.search(val))
-        std::cout << std::endl << ">>> ÊäÈëÔªËØµÄÖµ " << val << " ÔÚ¶ş²æÅÅĞòÊ÷ÖĞÒÑ´æÔÚ£¡" << std::endl;
+        std::cout << std::endl << ">>> è¾“å…¥å…ƒç´ çš„å€¼ " << val << " åœ¨äºŒå‰æ’åºæ ‘ä¸­å·²å­˜åœ¨ï¼" << std::endl;
     else {
         binarySortTree.insert(val);
         binarySortTree.outputBST();
@@ -601,8 +623,8 @@ void insertElement(BinarySortTree<int>& binarySortTree)
 void searchElement(BinarySortTree<int>& binarySortTree)
 {
     std::cout << std::endl;
-    int val = inputInteger(SHRT_MIN, SHRT_MAX, "²éÑ¯ÔªËØµÄÖµ");
-    std::cout << std::endl << ">>> ²éÑ¯ÔªËØµÄÖµ " << val << " ÔÚ¶ş²æÅÅĞòÊ÷ÖĞ" << (binarySortTree.search(val) ? "" : "²»") << "´æÔÚ£¡" << std::endl;
+    int val = inputInteger(SHRT_MIN, SHRT_MAX, "æŸ¥è¯¢å…ƒç´ çš„å€¼");
+    std::cout << std::endl << ">>> æŸ¥è¯¢å…ƒç´ çš„å€¼ " << val << " åœ¨äºŒå‰æ’åºæ ‘ä¸­" << (binarySortTree.search(val) ? "" : "ä¸") << "å­˜åœ¨ï¼" << std::endl;
 }
 
 /*
@@ -614,27 +636,27 @@ int main()
 {
     /* System entry prompt */
     std::cout << "+--------------------+" << std::endl;
-    std::cout << "|     ¶ş²æÅÅĞòÊ÷     |" << std::endl;
+    std::cout << "|     äºŒå‰æ’åºæ ‘     |" << std::endl;
     std::cout << "|  Binary Sort Tree  |" << std::endl;
     std::cout << "+--------------------+" << std::endl;
 
     /* Establish binary sort tree */
     BinarySortTree<int> binarySortTree;
-    std::cout << std::endl << ">>> Çë½¨Á¢¶ş²æÅÅĞòÊ÷" << std::endl << std::endl;
-    int num = inputInteger(SHRT_MIN, SHRT_MAX, "¶ş²æÅÅĞòÊ÷ÔªËØ¸öÊı");
-    std::cout << std::endl << ">>> ÇëÒÀ´ÎÊäÈëÔªËØµÄÖµ£¨Ê¹ÓÃ¿Õ¸ñ·Ö¸ô£©" << std::endl << std::endl;
+    std::cout << std::endl << ">>> è¯·å»ºç«‹äºŒå‰æ’åºæ ‘" << std::endl << std::endl;
+    int num = inputInteger(SHRT_MIN, SHRT_MAX, "äºŒå‰æ’åºæ ‘å…ƒç´ ä¸ªæ•°");
+    std::cout << std::endl << ">>> è¯·ä¾æ¬¡è¾“å…¥å…ƒç´ çš„å€¼ï¼ˆä½¿ç”¨ç©ºæ ¼åˆ†éš”ï¼‰" << std::endl << std::endl;
     for (int i = 0; i < num; i++) {
         char tmp[64] = { 0 };
-        sprintf(tmp, "µÚ %d ¸öÔªËØµÄÖµ", i + 1);
+        sprintf(tmp, "ç¬¬ %d ä¸ªå…ƒç´ çš„å€¼", i + 1);
         int val = inputInteger(SHRT_MIN, SHRT_MAX, tmp);
         if (binarySortTree.search(val)) {
-            std::cout << std::endl << ">>> ÊäÈëÔªËØµÄÖµ " << val << " ÔÚ¶ş²æÅÅĞòÊ÷ÖĞÒÑ´æÔÚ£¬ÇëÖØĞÂÊäÈë£¡" << std::endl << std::endl;
+            std::cout << std::endl << ">>> è¾“å…¥å…ƒç´ çš„å€¼ " << val << " åœ¨äºŒå‰æ’åºæ ‘ä¸­å·²å­˜åœ¨ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl << std::endl;
             i--;
         }
         else
             binarySortTree.insert(val);
     }
-    std::cout << std::endl << ">>> ¶ş²æÅÅĞòÊ÷½¨Á¢Íê³É" << std::endl;
+    std::cout << std::endl << ">>> äºŒå‰æ’åºæ ‘å»ºç«‹å®Œæˆ" << std::endl;
     binarySortTree.outputBST();
 
     /* Perform operations */

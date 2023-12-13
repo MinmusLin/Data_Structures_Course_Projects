@@ -1,16 +1,21 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Power_Grid_Construction_Cost_Simulation_System
  * File Name:     power_grid_construction_cost_simulation_system.cpp
- * File Function: µçÍø½¨ÉèÔì¼ÛÄ£ÄâÏµÍ³µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/12/2
+ * File Function: ç”µç½‘å»ºè®¾é€ ä»·æ¨¡æ‹Ÿç³»ç»Ÿçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <stdlib.h>
 #include <iostream>
-#include <limits>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -177,18 +182,18 @@ void MinimumSpanningTree::setWeight(int src, int dst, int weight)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
         }
     }
 }
@@ -201,12 +206,29 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int inputStartVertex(int vertex)
 {
-    std::cout << std::endl << "ÇëÊäÈë½¨Á¢×îĞ¡Éú³ÉÊ÷µÄÆğÊ¼½Úµã [ÊäÈë·¶Î§: A~" << static_cast<char>(vertex + 'A' - 1) << "]: ";
+    std::cout << std::endl << "è¯·è¾“å…¥å»ºç«‹æœ€å°ç”Ÿæˆæ ‘çš„èµ·å§‹èŠ‚ç‚¹ [è¾“å…¥èŒƒå›´: A~" << static_cast<char>(vertex + 'A' - 1) << "]: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= 'A' && optn <= vertex + 'A' - 1) {
             std::cout << optn << std::endl << std::endl;
             return optn - 'A';
@@ -223,37 +245,48 @@ int main()
 {
     /* System entry prompt */
     std::cout << "+--------------------------------------------------+" << std::endl;
-    std::cout << "|               µçÍø½¨ÉèÔì¼ÛÄ£ÄâÏµÍ³               |" << std::endl;
+    std::cout << "|               ç”µç½‘å»ºè®¾é€ ä»·æ¨¡æ‹Ÿç³»ç»Ÿ               |" << std::endl;
     std::cout << "|  Power Grid Construction Cost Simulation System  |" << std::endl;
     std::cout << "+--------------------------------------------------+" << std::endl;
 
     /* Establish power grid */
-    std::cout << std::endl << ">>> Çë´´½¨µçÍø" << std::endl << std::endl;
-    int vertex = inputInteger(2, 'Z' - 'A' + 1, "µçÍø½Úµã¸öÊı");
+    std::cout << std::endl << ">>> è¯·åˆ›å»ºç”µç½‘" << std::endl << std::endl;
+    int vertex = inputInteger(2, 'Z' - 'A' + 1, "ç”µç½‘èŠ‚ç‚¹ä¸ªæ•°");
     MinimumSpanningTree MST(vertex);
-    std::cout << std::endl << ">>> µçÍø½Úµã A";
+    std::cout << std::endl << ">>> ç”µç½‘èŠ‚ç‚¹ A";
     for (int i = 1; i < vertex; i++)
-        std::cout << "¡¢" << static_cast<char>(i + 'A');
-    std::cout << " ´´½¨³É¹¦" << std::endl;
+        std::cout << "ã€" << static_cast<char>(i + 'A');
+    std::cout << " åˆ›å»ºæˆåŠŸ" << std::endl;
 
     /* Input the distance between any two power grid nodes */
-    std::cout << std::endl << ">>> ÇëÊäÈëÈÎÒâÁ½¸öµçÍø½ÚµãÖ®¼äµÄ¾àÀë" << std::endl << std::endl;
+    std::cout << std::endl << ">>> è¯·è¾“å…¥ä»»æ„ä¸¤ä¸ªç”µç½‘èŠ‚ç‚¹ä¹‹é—´çš„è·ç¦»" << std::endl << std::endl;
     for (int i = 0; i < vertex; i++)
         for (int j = i + 1; j < vertex; j++) {
             char tmp[64];
-            sprintf(tmp, "µçÍø½Úµã %c ºÍ %c Ö®¼äµÄ¾àÀë", i + 'A', j + 'A');
+            sprintf(tmp, "ç”µç½‘èŠ‚ç‚¹ %c å’Œ %c ä¹‹é—´çš„è·ç¦»", i + 'A', j + 'A');
             MST.setWeight(i, j, inputInteger(1, SHRT_MAX, tmp));
         }
 
     /* Generate minimum spanning tree using Prim algorithm */
     int startVertex = inputStartVertex(vertex);
-    std::cout << ">>> ½¨Á¢ Prim ×îĞ¡Éú³ÉÊ÷:" << std::endl << std::endl;
+    std::cout << ">>> å»ºç«‹ Prim æœ€å°ç”Ÿæˆæ ‘:" << std::endl << std::endl;
     MST.primMST(startVertex);
 
     /* Wait for enter to quit */
     std::cout << std::endl << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;

@@ -1,17 +1,22 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Genealogy_Management_System
  * File Name:     genealogy_management_system.cpp
- * File Function: ¼ÒÆ×¹ÜÀíÏµÍ³µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/11/27
+ * File Function: å®¶è°±ç®¡ç†ç³»ç»Ÿçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <stdlib.h>
 #include <iostream>
 #include <cstring>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
-#include <limits>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -501,7 +506,7 @@ std::istream& operator>>(std::istream& in, Person& person)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
@@ -510,7 +515,7 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
             std::cin.ignore(INT_MAX, '\n');
         }
@@ -525,13 +530,30 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> ²Ëµ¥: [1]ÍêÉÆ¼ÒÆ× [2]Ìí¼Ó¼ÒÍ¥³ÉÔ± [3]½âÉ¢¼ÒÍ¥³ÉÔ± [4]¸ü¸Ä¼ÒÍ¥³ÉÔ±ĞÕÃû [5]Í³¼Æ¼ÒÍ¥³ÉÔ± [0]ÍË³öÏµÍ³" << std::endl;
-    std::cout << std::endl << "ÇëÑ¡Ôñ²Ù×÷ÀàĞÍ: ";
+    std::cout << std::endl << ">>> èœå•: [1]å®Œå–„å®¶è°± [2]æ·»åŠ å®¶åº­æˆå‘˜ [3]è§£æ•£å®¶åº­æˆå‘˜ [4]æ›´æ”¹å®¶åº­æˆå‘˜å§“å [5]ç»Ÿè®¡å®¶åº­æˆå‘˜ [0]é€€å‡ºç³»ç»Ÿ" << std::endl;
+    std::cout << std::endl << "è¯·é€‰æ‹©æ“ä½œç±»å‹: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '0' && optn <= '5') {
             std::cout << "[" << optn << "]" << std::endl << std::endl;
             return optn - '0';
@@ -548,32 +570,32 @@ int selectOptn(void)
 void completeFamilyMembers(MyBinaryTree<Person>& genealogy)
 {
     Person person;
-    std::cout << "ÇëÊäÈëÒª½¨Á¢¼ÒÍ¥µÄÈËµÄĞÕÃû: ";
+    std::cout << "è¯·è¾“å…¥è¦å»ºç«‹å®¶åº­çš„äººçš„å§“å: ";
     std::cin >> person;
     char tmp[Person::NameMaxLength * 2];
     std::cout << std::endl;
     MyBinTreeNode<Person>* p = genealogy.findNode(person, genealogy.getRoot());
     if (p == NULL) {
-        std::cout << ">>> Î´ÔÚ¼ÒÆ×ÖĞÕÒµ½" << person << std::endl;
+        std::cout << ">>> æœªåœ¨å®¶è°±ä¸­æ‰¾åˆ°" << person << std::endl;
         return;
     }
     else if (p->leftChild != NULL) {
-        std::cout << ">>> " << person << "ÒÑ½¨Á¢¼ÒÍ¥" << std::endl;
+        std::cout << ">>> " << person << "å·²å»ºç«‹å®¶åº­" << std::endl;
         return;
     }
-    strcat(strcpy(tmp, person.name), "µÄ¶ùÅ®ÈËÊı");
+    strcat(strcpy(tmp, person.name), "çš„å„¿å¥³äººæ•°");
     int num = inputInteger(1, Person::DescendantsMaxNumber, tmp);
-    std::cout << std::endl << ">>> ÇëÒÀ´ÎÊäÈë" << person << "µÄ¶ùÅ®µÄĞÕÃû" << std::endl << std::endl;
+    std::cout << std::endl << ">>> è¯·ä¾æ¬¡è¾“å…¥" << person << "çš„å„¿å¥³çš„å§“å" << std::endl << std::endl;
     Person* descendants = new(std::nothrow) Person[num];
     if (descendants == NULL) {
         std::cerr << "Error: Memory allocation failed." << std::endl;
         exit(MEMORY_ALLOCATION_ERROR);
     }
     for (int i = 0; i < num; i++) {
-        std::cout << "ÇëÊäÈë" << person << "µÄµÚ" << i + 1 << "¸ö¶ùÅ®µÄĞÕÃû: ";
+        std::cout << "è¯·è¾“å…¥" << person << "çš„ç¬¬" << i + 1 << "ä¸ªå„¿å¥³çš„å§“å: ";
         std::cin >> descendants[i];
         if (genealogy.findNode(descendants[i], genealogy.getRoot())) {
-            std::cout << std::endl << ">>> " << descendants[i--] << "ÔÚ¼ÒÆ×ÖĞÒÑ´æÔÚ" << std::endl << std::endl;
+            std::cout << std::endl << ">>> " << descendants[i--] << "åœ¨å®¶è°±ä¸­å·²å­˜åœ¨" << std::endl << std::endl;
             continue;
         }
         if (i == 0)
@@ -581,7 +603,7 @@ void completeFamilyMembers(MyBinaryTree<Person>& genealogy)
         else
             genealogy.rightInsertNode(genealogy.findNode(descendants[i - 1], genealogy.getRoot()), descendants[i]);
     }
-    std::cout << std::endl << ">>> " << person << "µÄÏÂÒ»´ú×ÓËïÊÇ: ";
+    std::cout << std::endl << ">>> " << person << "çš„ä¸‹ä¸€ä»£å­å­™æ˜¯: ";
     for (int i = 0; i < num; i++)
         std::cout << (i == 0 ? "" : " ") << descendants[i];
     std::cout << std::endl;
@@ -596,23 +618,23 @@ void completeFamilyMembers(MyBinaryTree<Person>& genealogy)
 void addFamilyMembers(MyBinaryTree<Person>& genealogy)
 {
     Person person, descendant;
-    std::cout << "ÇëÊäÈëÒªÌí¼Ó¼ÒÍ¥³ÉÔ±µÄÈËµÄĞÕÃû: ";
+    std::cout << "è¯·è¾“å…¥è¦æ·»åŠ å®¶åº­æˆå‘˜çš„äººçš„å§“å: ";
     std::cin >> person;
     if (!genealogy.findNode(person, genealogy.getRoot())) {
-        std::cout << std::endl << ">>> Î´ÔÚ¼ÒÆ×ÖĞÕÒµ½" << person << std::endl;
+        std::cout << std::endl << ">>> æœªåœ¨å®¶è°±ä¸­æ‰¾åˆ°" << person << std::endl;
         return;
     }
     while (true) {
-        std::cout << std::endl << "ÇëÊäÈë" << person << "ĞÂÌí¼ÓµÄ¶ùÅ®µÄĞÕÃû: ";
+        std::cout << std::endl << "è¯·è¾“å…¥" << person << "æ–°æ·»åŠ çš„å„¿å¥³çš„å§“å: ";
         std::cin >> descendant;
         if (genealogy.findNode(descendant, genealogy.getRoot())) {
-            std::cout << std::endl << ">>> " << descendant << "ÔÚ¼ÒÆ×ÖĞÒÑ´æÔÚ" << std::endl;
+            std::cout << std::endl << ">>> " << descendant << "åœ¨å®¶è°±ä¸­å·²å­˜åœ¨" << std::endl;
             continue;
         }
         break;
     }
     MyBinTreeNode<Person>* p = genealogy.findNode(person, genealogy.getRoot());
-    std::cout << std::endl << ">>> " << person << "µÄÏÂÒ»´ú×ÓËïÊÇ: ";
+    std::cout << std::endl << ">>> " << person << "çš„ä¸‹ä¸€ä»£å­å­™æ˜¯: ";
     if (p->leftChild == NULL)
         genealogy.leftInsertNode(p, descendant);
     else {
@@ -636,21 +658,21 @@ void addFamilyMembers(MyBinaryTree<Person>& genealogy)
 void removeFamilyMembers(MyBinaryTree<Person>& genealogy)
 {
     Person person;
-    std::cout << "ÇëÊäÈëÒª½âÉ¢¼ÒÍ¥³ÉÔ±µÄÈËµÄĞÕÃû: ";
+    std::cout << "è¯·è¾“å…¥è¦è§£æ•£å®¶åº­æˆå‘˜çš„äººçš„å§“å: ";
     std::cin >> person;
     MyBinTreeNode<Person>* p = genealogy.findNode(person, genealogy.getRoot());
     if (p == NULL) {
-        std::cout << std::endl << ">>> Î´ÔÚ¼ÒÆ×ÖĞÕÒµ½" << person << std::endl;
+        std::cout << std::endl << ">>> æœªåœ¨å®¶è°±ä¸­æ‰¾åˆ°" << person << std::endl;
         return;
     }
     else if (p->leftChild == NULL) {
-        std::cout << std::endl << ">>> " << person << "ÎŞ¼ÒÍ¥³ÉÔ±" << std::endl;
+        std::cout << std::endl << ">>> " << person << "æ— å®¶åº­æˆå‘˜" << std::endl;
         return;
     }
-    std::cout << std::endl << ">>> " << person << "µÄ¼ÒÍ¥³ÉÔ±ÊÇ: ";
+    std::cout << std::endl << ">>> " << person << "çš„å®¶åº­æˆå‘˜æ˜¯: ";
     genealogy.inOrderOutput(p->leftChild);
     genealogy.destroy(p->leftChild);
-    std::cout << std::endl << std::endl << ">>> " << person << "µÄ¼ÒÍ¥³ÉÔ±ÒÑ½âÉ¢" << std::endl;
+    std::cout << std::endl << std::endl << ">>> " << person << "çš„å®¶åº­æˆå‘˜å·²è§£æ•£" << std::endl;
 }
 
 /*
@@ -662,23 +684,23 @@ void removeFamilyMembers(MyBinaryTree<Person>& genealogy)
 void changeFamilyMembers(MyBinaryTree<Person>& genealogy)
 {
     Person personBeforeChange, personAfterChange;
-    std::cout << "ÇëÊäÈëÒª¸ü¸Ä¼ÒÍ¥³ÉÔ±ĞÕÃûµÄÈËµÄ¸ü¸ÄÇ°ĞÕÃû: ";
+    std::cout << "è¯·è¾“å…¥è¦æ›´æ”¹å®¶åº­æˆå‘˜å§“åçš„äººçš„æ›´æ”¹å‰å§“å: ";
     std::cin >> personBeforeChange;
     if (!genealogy.findNode(personBeforeChange, genealogy.getRoot())) {
-        std::cout << std::endl << ">>> Î´ÔÚ¼ÒÆ×ÖĞÕÒµ½" << personBeforeChange << std::endl;
+        std::cout << std::endl << ">>> æœªåœ¨å®¶è°±ä¸­æ‰¾åˆ°" << personBeforeChange << std::endl;
         return;
     }
     while (true) {
-        std::cout << std::endl << "ÇëÊäÈëÒª¸ü¸Ä¼ÒÍ¥³ÉÔ±ĞÕÃûµÄÈËµÄ¸ü¸ÄºóĞÕÃû: ";
+        std::cout << std::endl << "è¯·è¾“å…¥è¦æ›´æ”¹å®¶åº­æˆå‘˜å§“åçš„äººçš„æ›´æ”¹åå§“å: ";
         std::cin >> personAfterChange;
         if (genealogy.findNode(personAfterChange, genealogy.getRoot())) {
-            std::cout << std::endl << ">>> " << personAfterChange << "ÔÚ¼ÒÆ×ÖĞÒÑ´æÔÚ" << std::endl;
+            std::cout << std::endl << ">>> " << personAfterChange << "åœ¨å®¶è°±ä¸­å·²å­˜åœ¨" << std::endl;
             continue;
         }
         break;
     }
     genealogy.modifyNode(personBeforeChange, personAfterChange, genealogy.getRoot());
-    std::cout << std::endl << ">>> " << personBeforeChange << "ÒÑ¸üÃûÎª" << personAfterChange << std::endl;
+    std::cout << std::endl << ">>> " << personBeforeChange << "å·²æ›´åä¸º" << personAfterChange << std::endl;
 }
 
 /*
@@ -690,17 +712,17 @@ void changeFamilyMembers(MyBinaryTree<Person>& genealogy)
 void countFamilyMembers(MyBinaryTree<Person>& genealogy)
 {
     Person person;
-    std::cout << "ÇëÊäÈëÒªÍ³¼ÆµÄ¼ÒÍ¥³ÉÔ±µÄÈËµÄĞÕÃû: ";
+    std::cout << "è¯·è¾“å…¥è¦ç»Ÿè®¡çš„å®¶åº­æˆå‘˜çš„äººçš„å§“å: ";
     std::cin >> person;
     MyBinTreeNode<Person>* p = genealogy.findNode(person, genealogy.getRoot());
     if (p == NULL) {
-        std::cout << std::endl << ">>> Î´ÔÚ¼ÒÆ×ÖĞÕÒµ½" << person << std::endl;
+        std::cout << std::endl << ">>> æœªåœ¨å®¶è°±ä¸­æ‰¾åˆ°" << person << std::endl;
         return;
     }
     int num = genealogy.getSize(p->leftChild);
-    std::cout << std::endl << ">>> " << person << "¹²ÓĞ" << num << "¸ö¶ùÅ®";
+    std::cout << std::endl << ">>> " << person << "å…±æœ‰" << num << "ä¸ªå„¿å¥³";
     if (num != 0) {
-        std::cout << "£¬·Ö±ğÊÇ: ";
+        std::cout << "ï¼Œåˆ†åˆ«æ˜¯: ";
         genealogy.inOrderOutput(p->leftChild);
     }
     std::cout << std::endl;
@@ -715,18 +737,18 @@ int main()
 {
     /* System entry prompt */
     std::cout << "+-------------------------------+" << std::endl;
-    std::cout << "|         ¼ÒÆ×¹ÜÀíÏµÍ³          |" << std::endl;
+    std::cout << "|         å®¶è°±ç®¡ç†ç³»ç»Ÿ          |" << std::endl;
     std::cout << "|  Genealogy Management System  |" << std::endl;
     std::cout << "+-------------------------------+" << std::endl << std::endl;
 
     /* Establish a genealogy management system */
-    std::cout << ">>> Çë½¨Á¢¼ÒÆ×¹ÜÀíÏµÍ³" << std::endl;
-    std::cout << std::endl << ">>> [ĞÕÃûÊäÈëÒªÇó] ²»³¬¹ı " << Person::NameMaxLength << " ¸öÓ¢ÎÄ×Ö·û»ò " << Person::NameMaxLength / 2 << " ¸öºº×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï" << std::endl;
-    std::cout << std::endl << "ÇëÊäÈë×æÏÈĞÕÃû: ";
+    std::cout << ">>> è¯·å»ºç«‹å®¶è°±ç®¡ç†ç³»ç»Ÿ" << std::endl;
+    std::cout << std::endl << ">>> [å§“åè¾“å…¥è¦æ±‚] ä¸è¶…è¿‡ " << Person::NameMaxLength << " ä¸ªè‹±æ–‡å­—ç¬¦æˆ– " << Person::NameMaxLength / 2 << " ä¸ªæ±‰å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­" << std::endl;
+    std::cout << std::endl << "è¯·è¾“å…¥ç¥–å…ˆå§“å: ";
     Person ancestor;
     std::cin >> ancestor;
     MyBinaryTree<Person> genealogy(ancestor);
-    std::cout << std::endl << ">>> ¼ÒÆ×½¨Á¢³É¹¦£¨×æÏÈ: " << genealogy.getRoot()->data << "£©" << std::endl;
+    std::cout << std::endl << ">>> å®¶è°±å»ºç«‹æˆåŠŸï¼ˆç¥–å…ˆ: " << genealogy.getRoot()->data << "ï¼‰" << std::endl;
 
     /* Perform operations on genealogy management system */
     while (true) {
@@ -747,7 +769,7 @@ int main()
                 countFamilyMembers(genealogy);
                 break;
             default:
-                std::cout << ">>> ¼ÒÆ×¹ÜÀíÏµÍ³ÒÑÍË³ö" << std::endl;
+                std::cout << ">>> å®¶è°±ç®¡ç†ç³»ç»Ÿå·²é€€å‡º" << std::endl;
                 return 0;
         }
     }

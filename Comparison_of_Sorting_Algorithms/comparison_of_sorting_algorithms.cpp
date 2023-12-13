@@ -1,17 +1,22 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Comparison_of_Sorting_Algorithms
  * File Name:     comparison_of_sorting_algorithms.cpp
- * File Function: ÅÅĞòËã·¨±È½ÏµÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/11/25
+ * File Function: æ’åºç®—æ³•æ¯”è¾ƒçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
-#include <Windows.h>
 #include <ctime>
-#include <limits>
-#include <conio.h>
+#include <climits>
 #include <iomanip>
+#ifdef _WIN32
+#include <Windows.h>
+#include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -39,7 +44,7 @@ static unsigned int compareCount = 0;
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
@@ -48,7 +53,7 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
             std::cin.ignore(INT_MAX, '\n');
         }
@@ -63,12 +68,29 @@ int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << "ÇëÑ¡ÔñÅÅĞòËã·¨: ";
+    std::cout << std::endl << "è¯·é€‰æ‹©æ’åºç®—æ³•: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '0' && optn <= '8') {
             std::cout << "[" << optn << "]" << std::endl;
             return optn - '0';
@@ -413,14 +435,14 @@ void radixSort(Type arr[], int n)
 
 /* Define sortOptions array */
 SortOption sortOptions[] = {
-    { bubbleSort, "Ã°ÅİÅÅĞò Bubble Sort" },
-    { selectionSort, "Ñ¡ÔñÅÅĞò Selection Sort" },
-    { insertionSort, "²åÈëÅÅĞò Insertion Sort" },
-    { shellSort, "Ï£¶ûÅÅĞò Shell Sort" },
-    { quickSort, "¿ìËÙÅÅĞò Quick Sort" },
-    { heapSort, "¶Ñ ÅÅ Ğò Heap Sort" },
-    { mergeSort, "¹é²¢ÅÅĞò Merge Sort" },
-    { radixSort, "»ùÊıÅÅĞò Radix Sort" }
+    { bubbleSort, "å†’æ³¡æ’åº Bubble Sort" },
+    { selectionSort, "é€‰æ‹©æ’åº Selection Sort" },
+    { insertionSort, "æ’å…¥æ’åº Insertion Sort" },
+    { shellSort, "å¸Œå°”æ’åº Shell Sort" },
+    { quickSort, "å¿«é€Ÿæ’åº Quick Sort" },
+    { heapSort, "å † æ’ åº Heap Sort" },
+    { mergeSort, "å½’å¹¶æ’åº Merge Sort" },
+    { radixSort, "åŸºæ•°æ’åº Radix Sort" }
 };
 
 /*
@@ -436,21 +458,25 @@ template <typename Type>
 void performSort(SortFunction sortFunc, Type arr[], int n, const char* prompt)
 {
     compareCount = 0;
-    std::cout << std::endl << ">>> ÅÅĞòËã·¨: " << prompt << std::endl;
+    std::cout << std::endl << ">>> æ’åºç®—æ³•: " << prompt << std::endl;
     int* sortArr = new(std::nothrow) int[n];
     if (sortArr == NULL) {
         std::cerr << "Error: Memory allocation failed." << std::endl;
         exit(MEMORY_ALLOCATION_ERROR);
     }
     std::copy(arr, arr + n, sortArr);
+#ifdef _WIN32
     LARGE_INTEGER tick, begin, end;
     QueryPerformanceFrequency(&tick);
     QueryPerformanceCounter(&begin);
+#endif
     sortFunc(sortArr, n);
+#ifdef _WIN32
     QueryPerformanceCounter(&end);
-    std::cout << ">>> ÅÅĞòÊ±¼ä: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << static_cast<double>(end.QuadPart - begin.QuadPart) / tick.QuadPart << "s" << std::endl;
-    std::cout << ">>> ±È½Ï´ÎÊı: " << compareCount << std::endl;
-    //std::cout << ">>> ÅÅĞòÊı×é: ";
+    std::cout << ">>> æ’åºæ—¶é—´: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << static_cast<double>(end.QuadPart - begin.QuadPart) / tick.QuadPart << "s" << std::endl;
+#endif
+    std::cout << ">>> æ¯”è¾ƒæ¬¡æ•°: " << compareCount << std::endl;
+    //std::cout << ">>> æ’åºæ•°ç»„: ";
     //for (int i = 0; i < n; i++)
     //    std::cout << sortArr[i] << " ";
     //std::cout << std::endl;
@@ -469,16 +495,16 @@ int main()
 
     /* System entry prompt */
     std::cout << "+------------------------------------+" << std::endl;
-    std::cout << "|            ÅÅĞòËã·¨±È½Ï            |" << std::endl;
+    std::cout << "|            æ’åºç®—æ³•æ¯”è¾ƒ            |" << std::endl;
     std::cout << "|  Comparison of Sorting Algorithms  |" << std::endl;
     std::cout << "+------------------------------------+" << std::endl << std::endl;
-    std::cout << ">>> ÅÅĞòËã·¨:" << std::endl;
+    std::cout << ">>> æ’åºç®—æ³•:" << std::endl;
     for (int i = 1; i <= 8; i++)
         std::cout << "    [" << i << "] " << sortOptions[i - 1].description << std::endl;
-    std::cout << "    [0] ÍË³ö³ÌĞò Quit Program" << std::endl << std::endl;
+    std::cout << "    [0] é€€å‡ºç¨‹åº Quit Program" << std::endl << std::endl;
 
     /* Generate random numbers */
-    int num = inputInteger(1, INT_MAX, "ÒªÉú³ÉËæ»úÊıµÄ¸öÊı");
+    int num = inputInteger(1, INT_MAX, "è¦ç”Ÿæˆéšæœºæ•°çš„ä¸ªæ•°");
     int* arr = new(std::nothrow) int[num];
     if (arr == NULL) {
         std::cerr << "Error: Memory allocation failed." << std::endl;
@@ -486,7 +512,7 @@ int main()
     }
     for (int i = 0; i < num; i++)
         arr[i] = rand();
-    std::cout << std::endl << ">>> Ëæ»úÊıÉú³É³É¹¦£¨Ëæ»úÊıÊıÁ¿: " << num << "£©" << std::endl;
+    std::cout << std::endl << ">>> éšæœºæ•°ç”ŸæˆæˆåŠŸï¼ˆéšæœºæ•°æ•°é‡: " << num << "ï¼‰" << std::endl;
 
     /* Sorting algorithm */
     while (true) {

@@ -1,18 +1,25 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Keyword_Search_System
  * File Name:     keyword_search_system.cpp
- * File Function: ¹Ø¼ü´Ê¼ìË÷ÏµÍ³µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/10/31
+ * File Function: å…³é”®è¯æ£€ç´¢ç³»ç»Ÿçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <iomanip>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
 #include <Windows.h>
-#include <iomanip>
-#include <limits>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definitions */
 #define MAX_LENGTH 64
@@ -48,15 +55,15 @@ bool hasSpace(const char* str)
 void inputString(char* str, const char* strName)
 {
     while (true) {
-        std::cout << std::endl << "ÇëÊäÈë" << strName << "£¨²»º¬¿Õ¸ñµÄ²»³¬¹ı " << MAX_LENGTH << " ¸öÓ¢ÎÄ×Ö·û»ò " << MAX_LENGTH / 2 << " ¸öºº×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï£©: ";
+        std::cout << std::endl << "è¯·è¾“å…¥" << strName << "ï¼ˆä¸å«ç©ºæ ¼çš„ä¸è¶…è¿‡ " << MAX_LENGTH << " ä¸ªè‹±æ–‡å­—ç¬¦æˆ– " << MAX_LENGTH / 2 << " ä¸ªæ±‰å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­ï¼‰: ";
         std::cin.get(str, MAX_LENGTH + 1, '\n');
         std::cin.clear();
         std::cin.ignore(INT_MAX, '\n');
         str[MAX_LENGTH] = '\0';
         if (*str == '\0')
-            std::cout << std::endl << ">>> " << strName << "Îª¿Õ£¬ÇëÖØĞÂÊäÈë£¡" << std::endl;
+            std::cout << std::endl << ">>> " << strName << "ä¸ºç©ºï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
         else if (hasSpace(str))
-            std::cout << std::endl << ">>> " << strName << "º¬ÓĞ¿Õ¸ñ£¬ÇëÖØĞÂÊäÈë£¡" << std::endl;
+            std::cout << std::endl << ">>> " << strName << "å«æœ‰ç©ºæ ¼ï¼Œè¯·é‡æ–°è¾“å…¥ï¼" << std::endl;
         else
             break;
     }
@@ -70,13 +77,30 @@ void inputString(char* str, const char* strName)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> ×Ö·û´®Ä£Ê½Æ¥ÅäËã·¨: [1]BF(Brute-Force)Ëã·¨ [2]KMP(Knuth-Morris-Pratt)Ëã·¨" << std::endl;
-    std::cout << std::endl << "ÇëÑ¡Ôñ×Ö·û´®Ä£Ê½Æ¥ÅäËã·¨: ";
+    std::cout << std::endl << ">>> å­—ç¬¦ä¸²æ¨¡å¼åŒ¹é…ç®—æ³•: [1]BF(Brute-Force)ç®—æ³• [2]KMP(Knuth-Morris-Pratt)ç®—æ³•" << std::endl;
+    std::cout << std::endl << "è¯·é€‰æ‹©å­—ç¬¦ä¸²æ¨¡å¼åŒ¹é…ç®—æ³•: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '1' && optn <= '2') {
             std::cout << "[" << optn << "]" << std::endl << std::endl;
             return optn - '0';
@@ -94,7 +118,7 @@ private:
     char getCharFromFile(std::fstream& file, int index);
     void getNext(int next[]);
 public:
-    KeywordSearch(const char* _filename) :fileLen(0), keywordLen(0), filename{ '\0' }, keyword{ '\0' } { strcpy_s(filename, _filename); }
+    KeywordSearch(const char* _filename) :fileLen(0), keywordLen(0), filename{ '\0' }, keyword{ '\0' } { strcpy(filename, _filename); }
     void initializeFile(void);
     void inputTextAndKeyword(std::fstream& file);
     void outputText(std::fstream& file);
@@ -153,15 +177,15 @@ void KeywordSearch::getNext(int next[])
 void KeywordSearch::inputTextAndKeyword(std::fstream& file)
 {
     char ch;
-    std::cout << std::endl << "ÇëÊäÈëÎÄ±¾ÄÚÈİ£¨°´»Ø³µ¼ü½áÊøÊäÈë£©:" << std::endl << std::endl;
+    std::cout << std::endl << "è¯·è¾“å…¥æ–‡æœ¬å†…å®¹ï¼ˆæŒ‰å›è½¦é”®ç»“æŸè¾“å…¥ï¼‰:" << std::endl << std::endl;
     while ((ch = std::cin.get()) != '\n')
         file.put(ch);
-    std::cout << std::endl << ">>> ÎÄ±¾ÎÄ¼ş " << filename << " ±£´æ³É¹¦" << std::endl;
+    std::cout << std::endl << ">>> æ–‡æœ¬æ–‡ä»¶ " << filename << " ä¿å­˜æˆåŠŸ" << std::endl;
     file.clear();
     file.seekg(0, std::ios::end);
     fileLen = file.tellg();
     file.seekg(0, std::ios::beg);
-    inputString(keyword, "¹Ø¼ü´Ê");
+    inputString(keyword, "å…³é”®è¯");
     keywordLen = static_cast<int>(strlen(keyword));
 }
 
@@ -175,7 +199,7 @@ void KeywordSearch::inputTextAndKeyword(std::fstream& file)
 void KeywordSearch::outputText(std::fstream& file)
 {
     char ch;
-    std::cout << std::endl << ">>> ÎÄ±¾ÎÄ¼ş " << filename << " ÄÚÈİ" << std::endl << std::endl;
+    std::cout << std::endl << ">>> æ–‡æœ¬æ–‡ä»¶ " << filename << " å†…å®¹" << std::endl << std::endl;
     while (file.get(ch))
         std::cout.put(ch);
     std::cout << std::endl;
@@ -245,16 +269,20 @@ int KeywordSearch::KMP_Search(std::fstream& file)
 void KeywordSearch::search(std::fstream& file, int optn)
 {
     int count = 0;
+#ifdef _WIN32
     LARGE_INTEGER tick, begin, end;
     QueryPerformanceFrequency(&tick);
     QueryPerformanceCounter(&begin);
+#endif
     if (optn == 1)
         count = BF_Search(file);
     else if (optn == 2)
         count = KMP_Search(file);
+#ifdef _WIN32
     QueryPerformanceCounter(&end);
-    std::cout << ">> ¼ìË÷½áÊø£¨¼ìË÷Ê±³¤: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << double(end.QuadPart - begin.QuadPart) / tick.QuadPart << "Ãë" << "£©" << std::endl << std::endl;
-    std::cout << "¹Ø¼ü´Ê \"" << keyword << "\" ÔÚÎÄ±¾ÎÄ¼ş " << filename << " ÖĞ³öÏÖ " << count << " ´Î" << std::endl << std::endl;
+    std::cout << ">> æ£€ç´¢ç»“æŸï¼ˆæ£€ç´¢æ—¶é•¿: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << double(end.QuadPart - begin.QuadPart) / tick.QuadPart << "ç§’" << "ï¼‰" << std::endl << std::endl;
+#endif
+    std::cout << "å…³é”®è¯ \"" << keyword << "\" åœ¨æ–‡æœ¬æ–‡ä»¶ " << filename << " ä¸­å‡ºç° " << count << " æ¬¡" << std::endl << std::endl;
 }
 
 /*
@@ -266,14 +294,14 @@ int main()
 {
     /* System entry prompt */
     std::cout << "+-------------------------+" << std::endl;
-    std::cout << "|     ¹Ø¼ü´Ê¼ìË÷ÏµÍ³      |" << std::endl;
+    std::cout << "|     å…³é”®è¯æ£€ç´¢ç³»ç»Ÿ      |" << std::endl;
     std::cout << "|  Keyword Search System  |" << std::endl;
     std::cout << "+-------------------------+" << std::endl << std::endl;
 
     /* Initialize file operations */
     char filename[MAX_LENGTH + 1] = { '\0' };
-    std::cout << ">>> Çë´´½¨ÎÄ±¾ÎÄ¼ş" << std::endl;
-    inputString(filename, "ÎÄ¼şÃû");
+    std::cout << ">>> è¯·åˆ›å»ºæ–‡æœ¬æ–‡ä»¶" << std::endl;
+    inputString(filename, "æ–‡ä»¶å");
     std::ifstream fileCheck(filename);
     if (fileCheck) {
         fileCheck.close();
@@ -285,7 +313,7 @@ int main()
         std::cerr << "Error: File " << filename << " creation failed." << std::endl;
         exit(FILE_CREATE_ERROR);
     }
-    std::cout << std::endl << ">>> ÎÄ±¾ÎÄ¼ş " << filename << " ´´½¨³É¹¦" << std::endl;
+    std::cout << std::endl << ">>> æ–‡æœ¬æ–‡ä»¶ " << filename << " åˆ›å»ºæˆåŠŸ" << std::endl;
     emptyFile.close();
     std::fstream textFile(filename);
     if (!textFile.is_open()) {
@@ -302,8 +330,19 @@ int main()
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;

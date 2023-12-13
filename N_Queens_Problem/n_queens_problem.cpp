@@ -1,16 +1,21 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  N_Queens_Problem
  * File Name:     n_queens_problem.cpp
- * File Function: N»ÊºóÎÊÌâµÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/10/27
+ * File Function: Nçš‡åé—®é¢˜çš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
-#include <limits>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -105,14 +110,14 @@ void N_Queens::findRecursively(int n)
  */
 void N_Queens::printChessboard(void)
 {
-    std::cout << std::endl << ">>> ½â·¨ " << count + 1 << std::endl << std::endl << "   ";
+    std::cout << std::endl << ">>> è§£æ³• " << count + 1 << std::endl << std::endl << "   ";
     for (int i = 0; i < size; i++)
         std::cout << std::setw(2) << i + 1;
     std::cout << std::endl << "  +" << std::setfill('-') << std::setw(2 * size) << "-" << std::setfill(' ') << "+" << std::endl;
     for (int i = 0; i < size; i++) {
         std::cout << std::setw(2) << i + 1 << "|";
         for (int j = 0; j < size; j++)
-            std::cout << (j == array[i] ? "¡ñ" : "  ");
+            std::cout << (j == array[i] ? "â—" : "  ");
         std::cout << "|" << std::endl;
     }
     std::cout << "  +" << std::setfill('-') << std::setw(2 * size) << "-" << std::setfill(' ') << "+" << std::endl;
@@ -128,7 +133,7 @@ void N_Queens::printChessboard(void)
 void N_Queens::solve(void)
 {
     findRecursively(0);
-    std::cout << std::endl << ">>> " << size << " »ÊºóÎÊÌâÓĞ " << count << " ÖÖ½â·¨" << std::endl << std::endl;
+    std::cout << std::endl << ">>> " << size << " çš‡åé—®é¢˜æœ‰ " << count << " ç§è§£æ³•" << std::endl << std::endl;
 }
 
 /*
@@ -142,18 +147,18 @@ void N_Queens::solve(void)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << " ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << " £¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << " è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << " ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
         }
     }
 }
@@ -167,25 +172,36 @@ int main()
 {
     /* System entry prompt */
     std::cout << "+--------------------+" << std::endl;
-    std::cout << "|     N»ÊºóÎÊÌâ      |" << std::endl;
+    std::cout << "|     Nçš‡åé—®é¢˜      |" << std::endl;
     std::cout << "|  N Queens Problem  |" << std::endl;
     std::cout << "+--------------------+" << std::endl << std::endl;
 
     /* Problem description */
-    std::cout << ">>> ÎÊÌâÃèÊö" << std::endl << std::endl;
-    std::cout << "    ÔÚÒ»¸ö N ¡Á N µÄÆåÅÌÉÏ£¬·ÅÖÃ N ¸ö»Êºó£¬Ê¹Æä»¥²»¹¥" << std::endl;
-    std::cout << "»÷£¬¼´Ã»ÓĞÈÎÒâÁ½¸ö»ÊºóÔÚÍ¬Ò»ĞĞ¡¢Í¬Ò»ÁĞ»òÍ¬Ò»¶Ô½ÇÏßÉÏ¡£" << std::endl << std::endl;
+    std::cout << ">>> é—®é¢˜æè¿°" << std::endl << std::endl;
+    std::cout << "    åœ¨ä¸€ä¸ª N Ã— N çš„æ£‹ç›˜ä¸Šï¼Œæ”¾ç½® N ä¸ªçš‡åï¼Œä½¿å…¶äº’ä¸æ”»" << std::endl;
+    std::cout << "å‡»ï¼Œå³æ²¡æœ‰ä»»æ„ä¸¤ä¸ªçš‡ååœ¨åŒä¸€è¡Œã€åŒä¸€åˆ—æˆ–åŒä¸€å¯¹è§’çº¿ä¸Šã€‚" << std::endl << std::endl;
 
     /* Input N and initialize n_queens object */
-    N_Queens n_queens(inputInteger(1, 99, "»Êºó¸öÊı N"));
+    N_Queens n_queens(inputInteger(1, 99, "çš‡åä¸ªæ•° N"));
 
     /* Solve N-Queens Problem */
     n_queens.solve();
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;

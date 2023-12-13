@@ -1,16 +1,21 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Exam_Registration_System
  * File Name:     exam_registration_system.cpp
- * File Function: ¿¼ÊÔ±¨ÃûÏµÍ³µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/10/20
+ * File Function: è€ƒè¯•æŠ¥åç³»ç»Ÿçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
 #include <iomanip>
-#include <conio.h>
 #include <cstring>
-#include <limits>
+#include <climits>
+#ifdef _WIN32
+#include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definitions */
 #define MAX_SIZE 64
@@ -39,7 +44,7 @@ std::ostream& operator<<(std::ostream& out, const StuInfo& stuInfo)
     out << std::setiosflags(std::ios::left)
         << "| " << std::setw(12) << stuInfo.no
         << " | " << std::setw(24) << stuInfo.name
-        << " | " << (stuInfo.sex ? " ÄĞ " : " Å® ")
+        << " | " << (stuInfo.sex ? " ç”· " : " å¥³ ")
         << " |  " << std::setw(3) << stuInfo.age
         << " | " << std::setw(32) << stuInfo.category
         << " |" << std::resetiosflags(std::ios::left);
@@ -555,9 +560,9 @@ MyList<Type>& MyList<Type>::operator=(MyList<Type> L)
  */
 void printStuInfo(const StuInfo& stuInfo)
 {
-    std::cout << std::endl << ">>> ¿¼ÉúĞÅÏ¢" << std::endl;
+    std::cout << std::endl << ">>> è€ƒç”Ÿä¿¡æ¯" << std::endl;
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
-    std::cout << "| ¿¼ºÅ         | ĞÕÃû                     | ĞÔ±ğ | ÄêÁä | ±¨¿¼Àà±ğ                         |" << std::endl;
+    std::cout << "| è€ƒå·         | å§“å                     | æ€§åˆ« | å¹´é¾„ | æŠ¥è€ƒç±»åˆ«                         |" << std::endl;
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
     std::cout << stuInfo << std::endl;
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
@@ -571,12 +576,12 @@ void printStuInfo(const StuInfo& stuInfo)
  */
 void printStuInfo(MyList<StuInfo>& stuInfo)
 {
-    std::cout << std::endl << ">>> È«Ìå¿¼ÉúĞÅÏ¢ (¿¼ÉúÈËÊı: " << stuInfo.getLength() << ")" << std::endl;
+    std::cout << std::endl << ">>> å…¨ä½“è€ƒç”Ÿä¿¡æ¯ (è€ƒç”Ÿäººæ•°: " << stuInfo.getLength() << ")" << std::endl;
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
-    std::cout << "| ¿¼ºÅ         | ĞÕÃû                     | ĞÔ±ğ | ÄêÁä | ±¨¿¼Àà±ğ                         |" << std::endl;
+    std::cout << "| è€ƒå·         | å§“å                     | æ€§åˆ« | å¹´é¾„ | æŠ¥è€ƒç±»åˆ«                         |" << std::endl;
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
     if (stuInfo.isEmpty())
-        std::cout << "| ÎŞ¿¼ÉúĞÅÏ¢   |                          |      |      |                                  |" << std::endl;
+        std::cout << "| æ— è€ƒç”Ÿä¿¡æ¯   |                          |      |      |                                  |" << std::endl;
     else
         stuInfo.output();
     std::cout << "+--------------+--------------------------+------+------+----------------------------------+" << std::endl;
@@ -590,13 +595,30 @@ void printStuInfo(MyList<StuInfo>& stuInfo)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> ²Ëµ¥: [1]²åÈë¹¦ÄÜ [2]É¾³ı¹¦ÄÜ [3]²éÑ¯¹¦ÄÜ [4]ĞŞ¸Ä¹¦ÄÜ [5]Í³¼Æ¹¦ÄÜ [0]ÍË³öÏµÍ³" << std::endl;
-    std::cout << std::endl << "ÇëÑ¡Ôñ²Ù×÷ÀàĞÍ: ";
+    std::cout << std::endl << ">>> èœå•: [1]æ’å…¥åŠŸèƒ½ [2]åˆ é™¤åŠŸèƒ½ [3]æŸ¥è¯¢åŠŸèƒ½ [4]ä¿®æ”¹åŠŸèƒ½ [5]ç»Ÿè®¡åŠŸèƒ½ [0]é€€å‡ºç³»ç»Ÿ" << std::endl;
+    std::cout << std::endl << "è¯·é€‰æ‹©æ“ä½œç±»å‹: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '0' && optn <= '5') {
             std::cout << "[" << optn << "]" << std::endl << std::endl;
             return optn - '0';
@@ -643,12 +665,12 @@ void truncateString(char* str, int len)
 void inputPrompt(const char* prompt)
 {
     std::cout << std::endl << ">>> " << prompt << std::endl;
-    std::cout << "    [ÊäÈë¸ñÊ½] ¿¼ºÅ ĞÕÃû ĞÔ±ğ ÄêÁä ±¨¿¼Àà±ğ (ÓÃ¿Õ¸ñ·Ö¸ôÊı¾İ)" << std::endl;
-    std::cout << "    [¿¼    ºÅ] ²»³¬¹ı 12 ¸öÊı×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï" << std::endl;
-    std::cout << "    [ĞÕ    Ãû] ²»³¬¹ı 24 ¸öÓ¢ÎÄ×Ö·û»ò 12 ¸öºº×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï" << std::endl;
-    std::cout << "    [ĞÔ    ±ğ] ÄĞ / Å®" << std::endl;
-    std::cout << "    [Äê    Áä] ÔÚ 1 ÖÁ 99 ·¶Î§ÄÚµÄÕûĞÍÊı¾İ" << std::endl;
-    std::cout << "    [±¨¿¼Àà±ğ] ²»³¬¹ı 32 ¸öÓ¢ÎÄ×Ö·û»ò 16 ¸öºº×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï" << std::endl << std::endl;
+    std::cout << "    [è¾“å…¥æ ¼å¼] è€ƒå· å§“å æ€§åˆ« å¹´é¾„ æŠ¥è€ƒç±»åˆ« (ç”¨ç©ºæ ¼åˆ†éš”æ•°æ®)" << std::endl;
+    std::cout << "    [è€ƒ    å·] ä¸è¶…è¿‡ 12 ä¸ªæ•°å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­" << std::endl;
+    std::cout << "    [å§“    å] ä¸è¶…è¿‡ 24 ä¸ªè‹±æ–‡å­—ç¬¦æˆ– 12 ä¸ªæ±‰å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­" << std::endl;
+    std::cout << "    [æ€§    åˆ«] ç”· / å¥³" << std::endl;
+    std::cout << "    [å¹´    é¾„] åœ¨ 1 è‡³ 99 èŒƒå›´å†…çš„æ•´å‹æ•°æ®" << std::endl;
+    std::cout << "    [æŠ¥è€ƒç±»åˆ«] ä¸è¶…è¿‡ 32 ä¸ªè‹±æ–‡å­—ç¬¦æˆ– 16 ä¸ªæ±‰å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­" << std::endl << std::endl;
 }
 
 /*
@@ -662,18 +684,18 @@ void inputPrompt(const char* prompt)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
         }
     }
 }
@@ -714,15 +736,15 @@ StuInfo inputStuInfo(MyList<StuInfo>& stuInfo)
         std::cin >> tempStu.no;
         truncateString(tempStu.no, 12);
         if (!isNumericString(tempStu.no)) {
-            std::cerr << std::endl << ">>> ¿¼ºÅÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈëµ±Ç°¿¼ÉúĞÅÏ¢£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> è€ƒå·è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥å½“å‰è€ƒç”Ÿä¿¡æ¯ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             continue;
         }
         else if (findPosByStuNo(stuInfo, tempStu.no)) {
-            std::cerr << std::endl << ">>> ÒÑ´æÔÚ¿¼ºÅÏàÍ¬µÄ¿¼Éú£¬ÇëÖØĞÂÊäÈëµ±Ç°¿¼ÉúĞÅÏ¢£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> å·²å­˜åœ¨è€ƒå·ç›¸åŒçš„è€ƒç”Ÿï¼Œè¯·é‡æ–°è¾“å…¥å½“å‰è€ƒç”Ÿä¿¡æ¯ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             continue;
         }
 
@@ -733,14 +755,14 @@ StuInfo inputStuInfo(MyList<StuInfo>& stuInfo)
         /* Input student sex and validate its format */
         char sex[MAX_SIZE] = { 0 };
         std::cin >> sex;
-        if (!strcmp(sex, "ÄĞ"))
+        if (!strcmp(sex, "ç”·"))
             tempStu.sex = true;
-        else if (!strcmp(sex, "Å®"))
+        else if (!strcmp(sex, "å¥³"))
             tempStu.sex = false;
         else {
-            std::cerr << std::endl << ">>> ĞÔ±ğÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈëµ±Ç°¿¼ÉúĞÅÏ¢£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> æ€§åˆ«è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥å½“å‰è€ƒç”Ÿä¿¡æ¯ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             continue;
         }
 
@@ -750,9 +772,9 @@ StuInfo inputStuInfo(MyList<StuInfo>& stuInfo)
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput > 0 && tempInput < 100)
             tempStu.age = static_cast<int>(tempInput);
         else {
-            std::cerr << std::endl << ">>> ÄêÁäÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈëµ±Ç°¿¼ÉúĞÅÏ¢£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> å¹´é¾„è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥å½“å‰è€ƒç”Ÿä¿¡æ¯ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             continue;
         }
 
@@ -774,12 +796,12 @@ StuInfo inputStuInfo(MyList<StuInfo>& stuInfo)
  */
 void buildStuInfoList(MyList<StuInfo>& stuInfo, int stuNum)
 {
-    inputPrompt("ÇëÒÀ´ÎÂ¼Èë¿¼ÉúĞÅÏ¢:");
+    inputPrompt("è¯·ä¾æ¬¡å½•å…¥è€ƒç”Ÿä¿¡æ¯:");
     for (int count = 0; count < stuNum; count++) {
         StuInfo tempStu = inputStuInfo(stuInfo);
         stuInfo.insert(count, tempStu);
     }
-    std::cout << std::endl << ">>> ¿¼ÉúĞÅÏ¢ÏµÍ³½¨Á¢Íê³É (¿¼ÉúÈËÊı: " << stuNum << ")" << std::endl;
+    std::cout << std::endl << ">>> è€ƒç”Ÿä¿¡æ¯ç³»ç»Ÿå»ºç«‹å®Œæˆ (è€ƒç”Ÿäººæ•°: " << stuNum << ")" << std::endl;
     printStuInfo(stuInfo);
 }
 
@@ -795,13 +817,13 @@ int getStuNoAndPos(MyList<StuInfo>& stuInfo, const char* prompt)
     /* Get valid student number */
     char stuNo[MAX_SIZE] = { 0 };
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " [²»³¬¹ı 12 ¸öÊı×Ö×Ö·û×é³ÉµÄ×Ö·û´®£¬³¬³ö²¿·Ö½«±»½Ø¶Ï]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " [ä¸è¶…è¿‡ 12 ä¸ªæ•°å­—å­—ç¬¦ç»„æˆçš„å­—ç¬¦ä¸²ï¼Œè¶…å‡ºéƒ¨åˆ†å°†è¢«æˆªæ–­]: ";
         std::cin >> stuNo;
         truncateString(stuNo, 12);
         if (!isNumericString(stuNo)) {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             continue;
         }
         else
@@ -820,8 +842,8 @@ int getStuNoAndPos(MyList<StuInfo>& stuInfo, const char* prompt)
  */
 void insertFunction(MyList<StuInfo>& stuInfo)
 {
-    int position = inputInteger(1, stuInfo.getLength() + 1, "´ı²åÈë¿¼ÉúµÄÎ»ÖÃ");
-    inputPrompt("ÇëÂ¼Èë´ı²åÈë¿¼ÉúĞÅÏ¢:");
+    int position = inputInteger(1, stuInfo.getLength() + 1, "å¾…æ’å…¥è€ƒç”Ÿçš„ä½ç½®");
+    inputPrompt("è¯·å½•å…¥å¾…æ’å…¥è€ƒç”Ÿä¿¡æ¯:");
     StuInfo tempStu = inputStuInfo(stuInfo);
     stuInfo.insert(position - 1, tempStu);
     printStuInfo(tempStu);
@@ -836,14 +858,14 @@ void insertFunction(MyList<StuInfo>& stuInfo)
  */
 void deleteFunction(MyList<StuInfo>& stuInfo)
 {
-    int position = getStuNoAndPos(stuInfo, "´ıÉ¾³ı¿¼ÉúµÄ¿¼ºÅ");
+    int position = getStuNoAndPos(stuInfo, "å¾…åˆ é™¤è€ƒç”Ÿçš„è€ƒå·");
     StuInfo delStu;
     if (stuInfo.remove(position, delStu)) {
         printStuInfo(delStu);
         printStuInfo(stuInfo);
     }
     else
-        std::cout << std::endl << ">>> Î´²éÑ¯µ½¸Ã¿¼Éú" << std::endl;
+        std::cout << std::endl << ">>> æœªæŸ¥è¯¢åˆ°è¯¥è€ƒç”Ÿ" << std::endl;
 }
 
 /*
@@ -854,12 +876,12 @@ void deleteFunction(MyList<StuInfo>& stuInfo)
  */
 void searchFunction(MyList<StuInfo>& stuInfo)
 {
-    int position = getStuNoAndPos(stuInfo, "´ı²éÑ¯¿¼ÉúµÄ¿¼ºÅ");
+    int position = getStuNoAndPos(stuInfo, "å¾…æŸ¥è¯¢è€ƒç”Ÿçš„è€ƒå·");
     StuInfo tempStu;
     if (stuInfo.getData(position, tempStu))
         printStuInfo(tempStu);
     else
-        std::cout << std::endl << ">>> Î´²éÑ¯µ½¸Ã¿¼Éú" << std::endl;
+        std::cout << std::endl << ">>> æœªæŸ¥è¯¢åˆ°è¯¥è€ƒç”Ÿ" << std::endl;
 }
 
 /*
@@ -871,17 +893,17 @@ void searchFunction(MyList<StuInfo>& stuInfo)
 void modifyFunction(MyList<StuInfo>& stuInfo)
 {
     /* Delete the information of the student before modification */
-    int position = getStuNoAndPos(stuInfo, "´ıĞŞ¸Ä¿¼ÉúµÄ¿¼ºÅ");
+    int position = getStuNoAndPos(stuInfo, "å¾…ä¿®æ”¹è€ƒç”Ÿçš„è€ƒå·");
     StuInfo modifyStu;
     if (stuInfo.remove(position, modifyStu))
         printStuInfo(modifyStu);
     else {
-        std::cout << std::endl << ">>> Î´²éÑ¯µ½¸Ã¿¼Éú" << std::endl;
+        std::cout << std::endl << ">>> æœªæŸ¥è¯¢åˆ°è¯¥è€ƒç”Ÿ" << std::endl;
         return;
     }
 
     /* Add the information of the student after modification */
-    inputPrompt("ÇëÂ¼Èë´ıĞŞ¸Ä¿¼ÉúĞÅÏ¢:");
+    inputPrompt("è¯·å½•å…¥å¾…ä¿®æ”¹è€ƒç”Ÿä¿¡æ¯:");
     modifyStu = inputStuInfo(stuInfo);
     stuInfo.insert(position - 1, modifyStu);
     printStuInfo(modifyStu);
@@ -896,9 +918,9 @@ void modifyFunction(MyList<StuInfo>& stuInfo)
  */
 void printCategoryChartHeader(void)
 {
-    std::cout  << ">>> ¿¼Éú±¨¿¼Àà±ğÍ³¼Æ" << std::endl;
+    std::cout  << ">>> è€ƒç”ŸæŠ¥è€ƒç±»åˆ«ç»Ÿè®¡" << std::endl;
     std::cout << "+----------------------------------+------------+------------+" << std::endl;
-    std::cout << "| ±¨¿¼Àà±ğ                         | ÈËÊı       | ±ÈÀı(%)    |" << std::endl;
+    std::cout << "| æŠ¥è€ƒç±»åˆ«                         | äººæ•°       | æ¯”ä¾‹(%)    |" << std::endl;
     std::cout << "+----------------------------------+------------+------------+" << std::endl;
 }
 
@@ -911,12 +933,12 @@ void printCategoryChartHeader(void)
  */
 void statisticsGender(int stuNum, int maleCount)
 {
-    std::cout << std::setiosflags(std::ios::left) << std::endl << ">>> ¿¼ÉúĞÔ±ğÍ³¼Æ" << std::endl;
+    std::cout << std::setiosflags(std::ios::left) << std::endl << ">>> è€ƒç”Ÿæ€§åˆ«ç»Ÿè®¡" << std::endl;
     std::cout << "+------+------------+------------+" << std::endl;
-    std::cout << "| ĞÔ±ğ | ÈËÊı       | ±ÈÀı(%)    |" << std::endl;
+    std::cout << "| æ€§åˆ« | äººæ•°       | æ¯”ä¾‹(%)    |" << std::endl;
     std::cout << "+------+------------+------------+" << std::endl;
-    std::cout << "|  ÄĞ  | " << std::setw(10) << maleCount << " | " << std::setw(10) << (maleCount * 100.0 / stuNum) << " |" << std::endl;
-    std::cout << "|  Å®  | " << std::setw(10) << (stuNum - maleCount) << " | " << std::setw(10) << ((stuNum - maleCount) * 100.0 / stuNum) << " |" << std::endl;
+    std::cout << "|  ç”·  | " << std::setw(10) << maleCount << " | " << std::setw(10) << (maleCount * 100.0 / stuNum) << " |" << std::endl;
+    std::cout << "|  å¥³  | " << std::setw(10) << (stuNum - maleCount) << " | " << std::setw(10) << ((stuNum - maleCount) * 100.0 / stuNum) << " |" << std::endl;
     std::cout << "+------+------------+------------+" << std::endl << std::resetiosflags(std::ios::left);
 }
 
@@ -929,9 +951,9 @@ void statisticsGender(int stuNum, int maleCount)
  */
 void statisticsAge(int stuNum, int ageCount[])
 {
-    std::cout << std::setiosflags(std::ios::left) << std::endl << ">>> ¿¼ÉúÄêÁäÍ³¼Æ" << std::endl;
+    std::cout << std::setiosflags(std::ios::left) << std::endl << ">>> è€ƒç”Ÿå¹´é¾„ç»Ÿè®¡" << std::endl;
     std::cout << "+------+------------+------------+" << std::endl;
-    std::cout << "| ÄêÁä | ÈËÊı       | ±ÈÀı(%)    |" << std::endl;
+    std::cout << "| å¹´é¾„ | äººæ•°       | æ¯”ä¾‹(%)    |" << std::endl;
     std::cout << "+------+------------+------------+" << std::endl;
     for (int count = 0; count < 100; count++)
         if (ageCount[count])
@@ -1005,14 +1027,14 @@ void examRegistrationSystem(void)
 {
     /* System entry prompt */
     std::cout << "+----------------------------+" << std::endl;
-    std::cout << "|        ¿¼ÊÔ±¨ÃûÏµÍ³        |" << std::endl;
+    std::cout << "|        è€ƒè¯•æŠ¥åç³»ç»Ÿ        |" << std::endl;
     std::cout << "|  Exam Registration System  |" << std::endl;
     std::cout << "+----------------------------+" << std::endl;
 
     /* Build a student information system */
-    std::cout << std::endl << ">>> Çë½¨Á¢¿¼ÉúĞÅÏ¢ÏµÍ³" << std::endl << std::endl;
+    std::cout << std::endl << ">>> è¯·å»ºç«‹è€ƒç”Ÿä¿¡æ¯ç³»ç»Ÿ" << std::endl << std::endl;
     MyList<StuInfo> stuInfo;
-    int stuNum = inputInteger(1, INT_MAX, "¿¼ÉúÈËÊı");
+    int stuNum = inputInteger(1, INT_MAX, "è€ƒç”Ÿäººæ•°");
     buildStuInfoList(stuInfo, stuNum);
 
     /* Perform operations on the exam registration system */
@@ -1034,7 +1056,7 @@ void examRegistrationSystem(void)
                 statisticsFunction(stuInfo);
                 break;
             default:
-                std::cout << ">>> ¿¼ÊÔ±¨ÃûÏµÍ³ÒÑÍË³ö" << std::endl;
+                std::cout << ">>> è€ƒè¯•æŠ¥åç³»ç»Ÿå·²é€€å‡º" << std::endl;
                 return;
         }
     }

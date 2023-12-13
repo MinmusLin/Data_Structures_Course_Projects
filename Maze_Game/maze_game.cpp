@@ -1,18 +1,23 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Maze_Game
  * File Name:     maze_game.cpp
- * File Function: ÃÔ¹¬ÓÎÏ·µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/10/26
+ * File Function: è¿·å®«æ¸¸æˆçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
 #include <ctime>
-#include <Windows.h>
-#include <limits>
-#include <conio.h>
+#include <climits>
 #include <cmath>
 #include <iomanip>
+#ifdef _WIN32
+#include <conio.h>
+#include <Windows.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definitions */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -635,15 +640,15 @@ void Maze::output(void)
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (i == startRow && j == startCol)
-                std::cout << "Ê¼";
+                std::cout << "å§‹";
             else if (i == targetRow && j == targetCol)
-                std::cout << "ÖÕ";
+                std::cout << "ç»ˆ";
             else  if (mazeMap[i][j] == MAZE_BLANK)
                 std::cout << "  ";
             else if (mazeMap[i][j] == MAZE_WALL)
-                std::cout << "¡ö";
+                std::cout << "â– ";
             else if (mazeMap[i][j] == MAZE_PATH)
-                std::cout << "¡Á";
+                std::cout << "Ã—";
         }
         std::cout << std::endl;
     }
@@ -990,7 +995,7 @@ bool Maze::AStar(void)
 int inputOddInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << " (ÆæÊı) [ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << " (å¥‡æ•°) [æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit && static_cast<int>(tempInput) % 2) {
@@ -999,7 +1004,7 @@ int inputOddInteger(int lowerLimit, int upperLimit, const char* prompt)
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
             std::cin.ignore(INT_MAX, '\n');
         }
@@ -1014,13 +1019,30 @@ int inputOddInteger(int lowerLimit, int upperLimit, const char* prompt)
  */
 int selectOptn(void)
 {
-    std::cout << std::endl << ">>> ÃÔ¹¬Ñ°Â·Ëã·¨: [1]µİ¹é»ØËİËÑË÷Ëã·¨ [2]Éî¶ÈÓÅÏÈËÑË÷(DFS)Ëã·¨ [3]¹ã¶ÈÓÅÏÈËÑË÷(BFS)Ëã·¨ [4]A*ËÑË÷Ëã·¨" << std::endl;
-    std::cout << std::endl << "ÇëÑ¡ÔñÃÔ¹¬Ñ°Â·Ëã·¨: ";
+    std::cout << std::endl << ">>> è¿·å®«å¯»è·¯ç®—æ³•: [1]é€’å½’å›æº¯æœç´¢ç®—æ³• [2]æ·±åº¦ä¼˜å…ˆæœç´¢(DFS)ç®—æ³• [3]å¹¿åº¦ä¼˜å…ˆæœç´¢(BFS)ç®—æ³• [4]A*æœç´¢ç®—æ³•" << std::endl;
+    std::cout << std::endl << "è¯·é€‰æ‹©è¿·å®«å¯»è·¯ç®—æ³•: ";
     char optn;
     while (true) {
+#ifdef _WIN32
         optn = _getch();
-        if (optn == 0 || optn == -32)
+#elif __linux__
+        initscr();
+        noecho();
+        cbreak();
+        optn = getch();
+        endwin();
+#endif
+        if (optn == 0 || optn == -32) {
+#ifdef _WIN32
             optn = _getch();
+#elif __linux__
+            initscr();
+            noecho();
+            cbreak();
+            optn = getch();
+            endwin();
+#endif
+        }
         else if (optn >= '1' && optn <= '4') {
             std::cout << "[" << optn << "]" << std::endl << std::endl;
             return optn - '0';
@@ -1038,29 +1060,33 @@ void mazeGame(void)
 {
     /* System entry prompt */
     std::cout << "+-------------+" << std::endl;
-    std::cout << "|  ÃÔ¹¬ÓÎÏ·   |" << std::endl;
+    std::cout << "|  è¿·å®«æ¸¸æˆ   |" << std::endl;
     std::cout << "|  Maze Game  |" << std::endl;
     std::cout << "+-------------+" << std::endl << std::endl;
-    std::cout << ">>> ±¾³ÌĞò»ùÓÚËæ»úPrimÉú³ÉËã·¨Éú³ÉÃÔ¹¬µØÍ¼" << std::endl << std::endl;
+    std::cout << ">>> æœ¬ç¨‹åºåŸºäºéšæœºPrimç”Ÿæˆç®—æ³•ç”Ÿæˆè¿·å®«åœ°å›¾" << std::endl << std::endl;
 
     /* Input the size of the maze map */
-    int mazeRows = inputOddInteger(mazeSizeLowerLimit, mazeSizeUpperLimit, "ÃÔ¹¬µØÍ¼ĞĞÊı");
+    int mazeRows = inputOddInteger(mazeSizeLowerLimit, mazeSizeUpperLimit, "è¿·å®«åœ°å›¾è¡Œæ•°");
     std::cout << std::endl;
-    int mazeCols = inputOddInteger(mazeSizeLowerLimit, mazeSizeUpperLimit, "ÃÔ¹¬µØÍ¼ÁĞÊı");
+    int mazeCols = inputOddInteger(mazeSizeLowerLimit, mazeSizeUpperLimit, "è¿·å®«åœ°å›¾åˆ—æ•°");
     std::cout << std::endl;
 
     /* Initialize the maze */
     Maze maze(mazeRows, mazeCols, mazeStartRow, mazeStartCol, mazeRows - 2, mazeCols - 2);
 
     /* Output the original maze map */
-    std::cout << ">>> ÃÔ¹¬µØÍ¼" << std::endl << std::endl;
+    std::cout << ">>> è¿·å®«åœ°å›¾" << std::endl << std::endl;
     maze.output();
 
     /* Select a pathfinding algorithm */
+#ifdef _WIN32
     LARGE_INTEGER tick, begin, end;
     QueryPerformanceFrequency(&tick);
+#endif
     int optn = selectOptn();
+#ifdef _WIN32
     QueryPerformanceCounter(&begin);
+#endif
     if(optn == 1)
         maze.recursiveBacktracking();
     else if(optn == 2)
@@ -1069,17 +1095,21 @@ void mazeGame(void)
         maze.BFS();
     else if (optn == 4)
         maze.AStar();
+#ifdef _WIN32
     QueryPerformanceCounter(&end);
+#endif
 
     /* Output the maze path map */
     maze.output();
 
     /* Output the maze path */
     if (maze.getPath().isEmpty()) {
-        std::cout << std::endl << ">>> Î´ÕÒµ½ÃÔ¹¬Â·¾¶" << std::endl << std::endl;
+        std::cout << std::endl << ">>> æœªæ‰¾åˆ°è¿·å®«è·¯å¾„" << std::endl << std::endl;
         return;
     }
-    std::cout << std::endl << ">>> ÃÔ¹¬Â·¾¶£¨Ñ°Â·Ê±³¤: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << double(end.QuadPart - begin.QuadPart) / tick.QuadPart << "Ãë" << "£©" << std::endl << std::endl;
+#ifdef _WIN32
+    std::cout << std::endl << ">>> è¿·å®«è·¯å¾„ï¼ˆå¯»è·¯æ—¶é•¿: " << std::setiosflags(std::ios::fixed) << std::setprecision(6) << double(end.QuadPart - begin.QuadPart) / tick.QuadPart << "ç§’" << "ï¼‰" << std::endl << std::endl;
+#endif
     while (!maze.getPath().isEmpty()) {
         Coordinate coord;
         maze.getPath().pop(coord);
@@ -1105,8 +1135,19 @@ int main()
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;

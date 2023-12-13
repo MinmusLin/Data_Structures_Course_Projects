@@ -1,15 +1,20 @@
-/****************************************************************
+ï»¿/****************************************************************
  * Project Name:  Josephus_Problem
  * File Name:     josephus_problem.cpp
- * File Function: Ô¼Éª·òÓÎÏ·µÄÊµÏÖ
- * Author:        Jishen Lin (ÁÖ¼ÌÉê)
- * Update Date:   2023/10/21
+ * File Function: çº¦ç‘Ÿå¤«æ¸¸æˆçš„å®ç°
+ * Author:        Jishen Lin (æ—ç»§ç”³)
+ * Update Date:   2023/12/13
  ****************************************************************/
 
+#include <stdlib.h>
 #include <iostream>
 #include <iomanip>
-#include <limits>
+#include <climits>
+#ifdef _WIN32
 #include <conio.h>
+#elif __linux__
+#include <ncurses.h>
+#endif
 
 /* Macro definition */
 #define MEMORY_ALLOCATION_ERROR -1
@@ -405,18 +410,18 @@ MyCircList<Type>& MyCircList<Type>::operator=(MyCircList<Type> L)
 int inputInteger(int lowerLimit, int upperLimit, const char* prompt)
 {
     while (true) {
-        std::cout << "ÇëÊäÈë" << prompt << "[ÕûÊı·¶Î§: " << lowerLimit << "~" << upperLimit << "]: ";
+        std::cout << "è¯·è¾“å…¥" << prompt << "[æ•´æ•°èŒƒå›´: " << lowerLimit << "~" << upperLimit << "]: ";
         double tempInput;
         std::cin >> tempInput;
         if (std::cin.good() && tempInput == static_cast<int>(tempInput) && tempInput >= lowerLimit && tempInput <= upperLimit) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
             return static_cast<int>(tempInput);
         }
         else {
-            std::cerr << std::endl << ">>> " << prompt << "ÊäÈë²»ºÏ·¨£¬ÇëÖØĞÂÊäÈë" << prompt << "£¡" << std::endl << std::endl;
+            std::cerr << std::endl << ">>> " << prompt << "è¾“å…¥ä¸åˆæ³•ï¼Œè¯·é‡æ–°è¾“å…¥" << prompt << "ï¼" << std::endl << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(INT_MAX, '\n');
         }
     }
 }
@@ -431,15 +436,15 @@ void printPrompt(void)
 {
     /* System entry prompt */
     std::cout << "+--------------------+" << std::endl;
-    std::cout << "|     Ô¼Éª·òÓÎÏ·     |" << std::endl;
+    std::cout << "|     çº¦ç‘Ÿå¤«æ¸¸æˆ     |" << std::endl;
     std::cout << "|  Josephus Problem  |" << std::endl;
     std::cout << "+--------------------+" << std::endl;
 
     /* Problem description */
-    std::cout << std::endl << ">>> ÎÊÌâÃèÊö" << std::endl << std::endl;
-    std::cout << "    N ¸öÈË°´Ë³ĞòÅÅ³ÉÒ»¸ö»·ĞÎ£¬ÒÀ´ÎË³Ğò±àºÅÎª 1 µ½ N £¬´Ó" << std::endl;
-    std::cout << "µÚ S ºÅ¿ªÊ¼£¬ÑØ»·Ë³Ğò¼ÆÊı£¬Ã¿Êıµ½µÚ M ¸öÈË¾Í½«ÆäÌÔÌ­£¬ÇÒ" << std::endl;
-    std::cout << "´ÓÏÂÒ»¸öÈË¿ªÊ¼ÖØĞÂ¼ÆÊı£¬ÖØ¸´Õâ¸ö¹ı³Ì£¬Ö±µ½Ê£ÏÂ K ¸öÈËÎªÖ¹¡£" << std::endl << std::endl;
+    std::cout << std::endl << ">>> é—®é¢˜æè¿°" << std::endl << std::endl;
+    std::cout << "    N ä¸ªäººæŒ‰é¡ºåºæ’æˆä¸€ä¸ªç¯å½¢ï¼Œä¾æ¬¡é¡ºåºç¼–å·ä¸º 1 åˆ° N ï¼Œä»" << std::endl;
+    std::cout << "ç¬¬ S å·å¼€å§‹ï¼Œæ²¿ç¯é¡ºåºè®¡æ•°ï¼Œæ¯æ•°åˆ°ç¬¬ M ä¸ªäººå°±å°†å…¶æ·˜æ±°ï¼Œä¸”" << std::endl;
+    std::cout << "ä»ä¸‹ä¸€ä¸ªäººå¼€å§‹é‡æ–°è®¡æ•°ï¼Œé‡å¤è¿™ä¸ªè¿‡ç¨‹ï¼Œç›´åˆ°å‰©ä¸‹ K ä¸ªäººä¸ºæ­¢ã€‚" << std::endl << std::endl;
 }
 
 /*
@@ -452,14 +457,14 @@ void josephusProblem(void)
 {
     /* Input */
     printPrompt();
-    std::cout << ">>> ÇëÊäÈë×ÜÈËÊı¡¢ÆğÊ¼Î»ÖÃ¡¢¼ä¸ôÈËÊı¡¢Ê£ÓàÈËÊı" << std::endl << std::endl;
-    int N = inputInteger(1, INT_MAX, "×ÜÈËÊı N ");
+    std::cout << ">>> è¯·è¾“å…¥æ€»äººæ•°ã€èµ·å§‹ä½ç½®ã€é—´éš”äººæ•°ã€å‰©ä½™äººæ•°" << std::endl << std::endl;
+    int N = inputInteger(1, INT_MAX, "æ€»äººæ•° N ");
     std::cout << std::endl;
-    int S = inputInteger(1, N, "ÆğÊ¼Î»ÖÃ S ");
+    int S = inputInteger(1, N, "èµ·å§‹ä½ç½® S ");
     std::cout << std::endl;
-    int M = inputInteger(1, INT_MAX, "¼ä¸ôÈËÊı M ");
+    int M = inputInteger(1, INT_MAX, "é—´éš”äººæ•° M ");
     std::cout << std::endl;
-    int K = inputInteger(0, N - 1, "Ê£ÓàÈËÊı K ");
+    int K = inputInteger(0, N - 1, "å‰©ä½™äººæ•° K ");
 
     /* Save the order number of each person */
     int* order = new(std::nothrow) int[N];
@@ -485,7 +490,7 @@ void josephusProblem(void)
     /* Perform Josephus problem */
     int remaining = N, currentPos = S, eliminated;
     MyCircLinkNode<int>* currentNode = circList.locate(currentPos);
-    std::cout << std::endl << ">>> ÓÎÏ·¿ªÊ¼" << std::endl << std::endl;
+    std::cout << std::endl << ">>> æ¸¸æˆå¼€å§‹" << std::endl << std::endl;
     while (remaining > K) {
         for (int count = 1; count < M; count++) {
             currentNode = currentNode->link;
@@ -499,11 +504,11 @@ void josephusProblem(void)
         if (currentNode == circList.getHead())
             currentNode = currentNode->link;
         circList.remove(currentPos, eliminated);
-        std::cout << "µÚ " << std::setw(numDigits) << N - (--remaining) << " ¸öÌÔÌ­µÄÈËµÄÎ»ÖÃ: " << eliminated << std::endl;
+        std::cout << "ç¬¬ " << std::setw(numDigits) << N - (--remaining) << " ä¸ªæ·˜æ±°çš„äººçš„ä½ç½®: " << eliminated << std::endl;
     }
-    std::cout << std::endl << ">>> ÓÎÏ·½áÊø£¨Ê£ÓàÈËÊı: " << remaining << "£©" << std::endl << std::endl;
+    std::cout << std::endl << ">>> æ¸¸æˆç»“æŸï¼ˆå‰©ä½™äººæ•°: " << remaining << "ï¼‰" << std::endl << std::endl;
     if (remaining > 0) {
-        std::cout << "Ê£ÓàÈËµÄÎ»ÖÃÎª: ";
+        std::cout << "å‰©ä½™äººçš„ä½ç½®ä¸º: ";
         circList.output();
         std::cout << std::endl << std::endl;
     }
@@ -524,8 +529,19 @@ int main()
 
     /* Wait for enter to quit */
     std::cout << "Press Enter to Quit" << std::endl;
+#ifdef _WIN32
     while (_getch() != '\r')
         continue;
+#elif __linux__
+    char ch;
+    do {
+        initscr();
+        noecho();
+        cbreak();
+        ch = getch();
+        endwin();
+    } while (ch != '\n');
+#endif
 
     /* Program ends */
     return 0;
