@@ -9,7 +9,7 @@ Data_Structure_Course_Designs
 A collection of my data structure course designs.
 
 > Relevant course
-> * Data Structure Course Designs (同济大学数据结构课程设计)
+> * Data Structure Course Designs 2023 (2023年同济大学数据结构课程设计)
 
 ## 解决方案项目组成
 
@@ -49,4 +49,4 @@ N皇后问题
 
 ## 文档更新日期
 
-2023年12月14日
+2024年1月13日
