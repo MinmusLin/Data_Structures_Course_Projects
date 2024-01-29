@@ -1,15 +1,15 @@
-# Data Structure Course Designs
+# Data Structures Course Projects
 
 ## 解决方案名称
 
-Data_Structure_Course_Designs
+Data_Structures_Course_Projects
 
 ## 解决方案简介
 
-A collection of my data structure course designs.
+A collection of my data structures course projects.
 
 > Relevant course
-> * Data Structure Course Designs 2023 (2023年同济大学数据结构课程设计)
+> * Data Structures Course Projects 2023 (2023年同济大学数据结构课程设计)
 
 ## 解决方案项目组成
 
@@ -49,4 +49,4 @@ N皇后问题
 
 ## 文档更新日期
 
-2024年1月13日
+2024年1月29日
