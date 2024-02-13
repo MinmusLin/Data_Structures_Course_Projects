@@ -1,17 +1,17 @@
 # Data Structures Course Projects
 
-## 解决方案名称
+## 仓库名称
 
 Data_Structures_Course_Projects
 
-## 解决方案简介
+## 仓库简介
 
 A collection of my data structures course projects.
 
 > Relevant course
 > * Data Structures Course Projects 2023 (2023年同济大学数据结构课程设计)
 
-## 解决方案项目组成
+## 仓库组成
 
 * [Binary Sort Tree](Binary_Sort_Tree)
 二叉排序树
@@ -43,10 +43,6 @@ N皇后问题
 * [Power Grid Construction Cost Simulation System](Power_Grid_Construction_Cost_Simulation_System)
 电网建设造价模拟系统
 
-## 集成开发环境
-
-* Microsoft Visual Studio 2022
-
 ## 文档更新日期
 
-2024年1月29日
+2024年2月13日
