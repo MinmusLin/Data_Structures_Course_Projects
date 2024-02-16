@@ -8,6 +8,8 @@ Data_Structures_Course_Projects
 
 A collection of my data structures course projects.
 
+2023年同济大学数据结构课程设计课程项目合集。
+
 > Relevant course
 > * Data Structures Course Projects 2023 (2023年同济大学数据结构课程设计)
 
@@ -45,4 +47,4 @@ N皇后问题
 
 ## 文档更新日期
 
-2024年2月13日
+2024年2月17日
