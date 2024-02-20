@@ -1,4 +1,4 @@
-﻿/****************************************************************
+/****************************************************************
  * Project Name:  Exam_Registration_System
  * File Name:     exam_registration_system.cpp
  * File Function: 考试报名系统的实现

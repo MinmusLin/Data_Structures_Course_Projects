@@ -1,4 +1,4 @@
-﻿/****************************************************************
+/****************************************************************
  * Project Name:  Expression_Calculation
  * File Name:     expression_calculation.cpp
  * File Function: 表达式计算的实现
