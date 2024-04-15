@@ -6,11 +6,12 @@ Data_Structures_Course_Projects
 
 ## 仓库简介
 
-A collection of my data structures course projects.
+A collection of my data structures course projects, and *Data Structures in File Compression Innovation*.
 
-2023年同济大学数据结构课程设计课程项目合集。
+2023年同济大学数据结构课程设计课程项目合集，以及《数据结构在文件压缩算法中的应用与创新》。
 
-> ***Relevant course***
+> ***Relevant courses***
+> * Data Structures 2023 (2023年同济大学数据结构)
 > * Data Structures Course Projects 2023 (2023年同济大学数据结构课程设计)
 
 ## 仓库组成
@@ -45,6 +46,9 @@ N皇后问题
 * [Power Grid Construction Cost Simulation System](Power_Grid_Construction_Cost_Simulation_System)
 电网建设造价模拟系统
 
+* [Data Structures in File Compression Innovation](Data_Structures_in_File_Compression_Innovation.pdf)
+数据结构在文件压缩算法中的应用与创新
+
 ## 文档更新日期
 
-2024年3月10日
+2024年4月15日
