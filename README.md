@@ -42,7 +42,7 @@ A collection of my data structures course projects, and *Data Structures in File
 迷宫游戏
 
 * [N Queens Problem](N_Queens_Problem)
-N皇后问题
+N 皇后问题
 
 * [Power Grid Construction Cost Simulation System](Power_Grid_Construction_Cost_Simulation_System)
 电网建设造价模拟系统
